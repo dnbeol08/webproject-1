@@ -79,9 +79,7 @@
       flex-wrap: wrap;
     }
 
-    .hero-copy {
-      flex: 1 1 520px;
-    }
+    .hero-copy { flex: 1 1 520px; }
 
     .hero h1 {
       margin: 0 0 10px;
@@ -104,8 +102,7 @@
       flex-wrap: wrap;
     }
 
-    .theme-toggle,
-    .lang-toggle {
+    .theme-toggle, .lang-toggle {
       min-width: 120px;
       align-self: center;
     }
@@ -159,6 +156,13 @@
       gap: 10px;
     }
 
+    .char-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
     button {
       border: 0;
       border-radius: 12px;
@@ -176,8 +180,24 @@
       transform: translateY(-1px);
     }
 
-    .ghost {
-      background: var(--primary-2);
+    .ghost { background: var(--primary-2); }
+
+    .canvas-wrap {
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      background: var(--out-bg);
+      padding: 10px;
+      margin-top: 6px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #charCanvas {
+      width: min(100%, 360px);
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      background: #f0f3f6;
+      display: block;
     }
 
     .out {
@@ -200,6 +220,7 @@
       .grid { grid-template-columns: 1fr; }
       .tool.full { grid-column: auto; }
       .row { grid-template-columns: 1fr; }
+      .char-row { grid-template-columns: 1fr; }
       .theme-toggle, .lang-toggle { width: 100%; }
       .hero-actions { width: 100%; }
     }
@@ -222,31 +243,25 @@
 
     <section class="grid">
       <article class="tool full">
+        <h2 id="charTitle"></h2>
+        <p id="charDesc"></p>
+        <div class="char-row">
+          <input id="charInput" type="file" accept="image/*" />
+          <button id="charBtn" type="button" onclick="generateCharacter()"></button>
+          <button id="charDownloadBtn" type="button" class="ghost" onclick="downloadCharacter()"></button>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="charCanvas" width="360" height="360"></canvas>
+        </div>
+        <div id="charOut" class="out"></div>
+      </article>
+
+      <article class="tool full">
         <h2 id="sumTitle"></h2>
         <p id="sumDesc"></p>
         <textarea id="sumInput"></textarea>
         <button id="sumBtn" onclick="summarizeText()"></button>
         <div id="sumOut" class="out"></div>
-      </article>
-
-      <article class="tool">
-        <h2 id="toneTitle"></h2>
-        <p id="toneDesc"></p>
-        <textarea id="toneInput"></textarea>
-        <select id="toneType">
-          <option value="formal" id="toneFormal"></option>
-          <option value="casual" id="toneCasual"></option>
-        </select>
-        <button id="toneBtn" onclick="transformTone()"></button>
-        <div id="toneOut" class="out"></div>
-      </article>
-
-      <article class="tool">
-        <h2 id="goalTitle"></h2>
-        <p id="goalDesc"></p>
-        <input id="goalInput" type="text" />
-        <button id="goalBtn" onclick="breakGoal()"></button>
-        <div id="goalOut" class="out"></div>
       </article>
 
       <article class="tool">
@@ -284,31 +299,27 @@
 
   <script>
     let currentLang = 'ko';
+    let uploadedImage = null;
+    let characterReady = false;
 
     const I18N = {
       ko: {
         htmlLang: 'ko',
         title: 'AI + 실용 툴 스튜디오',
         heroTitle: 'AI + 실용 툴 스튜디오',
-        heroDesc: '하나의 페이지에서 바로 쓸 수 있는 5가지 기능입니다. 지금은 경량 로직으로 구성했고, 이후 API 연동/기능 고도화하기 쉽게 구조를 나눠두었습니다.',
+        heroDesc: '사진 기반 캐릭터 생성 기능을 포함해 핵심 4가지 기능을 제공합니다.',
         langToggle: 'English',
         themeLight: '화이트모드',
         themeDark: '블랙모드',
-        sumTitle: '1) AI 텍스트 요약기',
+        charTitle: '1) 사진 기반 캐릭터 생성기',
+        charDesc: '사진을 업로드하면 닮은 느낌의 카툰 스타일 캐릭터로 변환합니다.',
+        charBtn: '캐릭터 만들기',
+        charDownloadBtn: '이미지 저장',
+        sumTitle: '2) AI 텍스트 요약기',
         sumDesc: '긴 글에서 핵심 문장만 간단히 추출합니다.',
         sumBtn: '요약하기',
         sumPlaceholder: '요약할 텍스트를 입력하세요.',
-        toneTitle: '2) AI 문장 톤 변환기',
-        toneDesc: '문장을 공손/캐주얼 톤으로 빠르게 바꿉니다.',
-        toneBtn: '변환하기',
-        tonePlaceholder: '변환할 문장을 입력하세요.',
-        toneFormal: '공손한 톤',
-        toneCasual: '캐주얼 톤',
-        goalTitle: '3) 스마트 목표 분해기',
-        goalDesc: '큰 목표를 바로 실행 가능한 단계로 나눕니다.',
-        goalBtn: '단계 만들기',
-        goalPlaceholder: '예: 30일 안에 포트폴리오 사이트 완성',
-        convTitle: '4) 단위 변환기',
+        convTitle: '3) 단위 변환기',
         convDesc: '길이(km↔mile), 온도(C↔F)를 변환합니다.',
         convBtn: '변환하기',
         convValuePlaceholder: '값 입력',
@@ -316,57 +327,45 @@
         convMileKm: 'mile → km',
         convCF: '°C → °F',
         convFC: '°F → °C',
-        pwTitle: '5) 안전 비밀번호 생성기',
+        pwTitle: '4) 안전 비밀번호 생성기',
         pwDesc: '길이/문자 옵션을 선택해 강한 비밀번호를 만듭니다.',
         pwBtn: '생성하기',
         pwAll: '영문+숫자+특수문자',
         pwAlnum: '영문+숫자',
         pwLetters: '영문만',
         defaults: {
+          charOut: '업로드 후 캐릭터 만들기를 누르세요.',
           sumOut: '결과가 여기에 표시됩니다.',
-          toneOut: '변환 결과가 여기에 표시됩니다.',
-          goalOut: '실행 단계가 여기에 표시됩니다.',
           convOut: '변환 결과가 여기에 표시됩니다.',
           pwOut: '생성된 비밀번호가 여기에 표시됩니다.'
         },
         msg: {
           enterText: '텍스트를 먼저 입력하세요.',
-          enterSentence: '문장을 먼저 입력하세요.',
-          enterGoal: '목표를 먼저 입력하세요.',
-          enterNumber: '숫자 값을 입력하세요.'
+          enterNumber: '숫자 값을 입력하세요.',
+          photoFirst: '먼저 사진을 업로드하세요.',
+          photoLoaded: '사진이 로드되었습니다. 캐릭터 만들기를 눌러주세요.',
+          photoError: '이미지를 읽지 못했습니다. 다른 파일로 시도하세요.',
+          charDone: '캐릭터 생성이 완료되었습니다.'
         },
-        goalSteps: (goal) => [
-          `목표 정의: "${goal}"를 구체적 완료 기준 1줄로 작성`,
-          '분석: 필요한 기술/자료/시간을 3가지로 정리',
-          '실행 계획: 이번 주에 끝낼 세부 작업 3개 선정',
-          '실행: 오늘 바로 시작할 30분 작업 1개 수행',
-          '검토: 결과 체크 후 다음 개선점 1개 기록'
-        ],
         summaryKeywords: ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략']
       },
       en: {
         htmlLang: 'en',
         title: 'AI + Practical Tools Studio',
         heroTitle: 'AI + Practical Tools Studio',
-        heroDesc: 'Five useful tools in one page. It currently uses lightweight logic and is structured for easy API integration later.',
+        heroDesc: 'Includes a photo-to-character feature with four practical tools.',
         langToggle: '한국어',
         themeLight: 'Light Mode',
         themeDark: 'Dark Mode',
-        sumTitle: '1) AI Text Summarizer',
+        charTitle: '1) Photo Character Maker',
+        charDesc: 'Upload a photo and convert it into a look-alike cartoon style character.',
+        charBtn: 'Create Character',
+        charDownloadBtn: 'Save Image',
+        sumTitle: '2) AI Text Summarizer',
         sumDesc: 'Extract key sentences from long text quickly.',
         sumBtn: 'Summarize',
         sumPlaceholder: 'Enter text to summarize.',
-        toneTitle: '2) AI Tone Transformer',
-        toneDesc: 'Switch sentence tone between formal and casual.',
-        toneBtn: 'Transform',
-        tonePlaceholder: 'Enter a sentence to transform.',
-        toneFormal: 'Formal tone',
-        toneCasual: 'Casual tone',
-        goalTitle: '3) Smart Goal Breakdown',
-        goalDesc: 'Split a big goal into practical action steps.',
-        goalBtn: 'Build Steps',
-        goalPlaceholder: 'Example: Finish my portfolio website in 30 days',
-        convTitle: '4) Unit Converter',
+        convTitle: '3) Unit Converter',
         convDesc: 'Convert length (km↔mile) and temperature (C↔F).',
         convBtn: 'Convert',
         convValuePlaceholder: 'Enter value',
@@ -374,32 +373,26 @@
         convMileKm: 'mile → km',
         convCF: '°C → °F',
         convFC: '°F → °C',
-        pwTitle: '5) Secure Password Generator',
+        pwTitle: '4) Secure Password Generator',
         pwDesc: 'Generate a strong password with selectable options.',
         pwBtn: 'Generate',
         pwAll: 'Letters + Numbers + Symbols',
         pwAlnum: 'Letters + Numbers',
         pwLetters: 'Letters only',
         defaults: {
+          charOut: 'Upload a photo, then click create character.',
           sumOut: 'Results will appear here.',
-          toneOut: 'Transformed text will appear here.',
-          goalOut: 'Action steps will appear here.',
           convOut: 'Converted result will appear here.',
           pwOut: 'Generated password will appear here.'
         },
         msg: {
           enterText: 'Please enter text first.',
-          enterSentence: 'Please enter a sentence first.',
-          enterGoal: 'Please enter a goal first.',
-          enterNumber: 'Please enter a numeric value.'
+          enterNumber: 'Please enter a numeric value.',
+          photoFirst: 'Please upload a photo first.',
+          photoLoaded: 'Photo loaded. Click create character.',
+          photoError: 'Could not read this image. Try another file.',
+          charDone: 'Character creation is complete.'
         },
-        goalSteps: (goal) => [
-          `Define: write one clear completion line for "${goal}"`,
-          'Analyze: list 3 required skills/resources/time blocks',
-          'Plan: choose 3 tasks to finish this week',
-          'Execute: do one 30-minute task today',
-          'Review: write one improvement for next run'
-        ],
         summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'efficient', 'result', 'strategy']
       }
     };
@@ -439,22 +432,15 @@
       document.getElementById('heroDesc').textContent = t.heroDesc;
       document.getElementById('langToggle').textContent = t.langToggle;
 
+      document.getElementById('charTitle').textContent = t.charTitle;
+      document.getElementById('charDesc').textContent = t.charDesc;
+      document.getElementById('charBtn').textContent = t.charBtn;
+      document.getElementById('charDownloadBtn').textContent = t.charDownloadBtn;
+
       document.getElementById('sumTitle').textContent = t.sumTitle;
       document.getElementById('sumDesc').textContent = t.sumDesc;
       document.getElementById('sumBtn').textContent = t.sumBtn;
       document.getElementById('sumInput').placeholder = t.sumPlaceholder;
-
-      document.getElementById('toneTitle').textContent = t.toneTitle;
-      document.getElementById('toneDesc').textContent = t.toneDesc;
-      document.getElementById('toneBtn').textContent = t.toneBtn;
-      document.getElementById('toneInput').placeholder = t.tonePlaceholder;
-      document.getElementById('toneFormal').textContent = t.toneFormal;
-      document.getElementById('toneCasual').textContent = t.toneCasual;
-
-      document.getElementById('goalTitle').textContent = t.goalTitle;
-      document.getElementById('goalDesc').textContent = t.goalDesc;
-      document.getElementById('goalBtn').textContent = t.goalBtn;
-      document.getElementById('goalInput').placeholder = t.goalPlaceholder;
 
       document.getElementById('convTitle').textContent = t.convTitle;
       document.getElementById('convDesc').textContent = t.convDesc;
@@ -472,7 +458,7 @@
       document.getElementById('pwAlnum').textContent = t.pwAlnum;
       document.getElementById('pwLetters').textContent = t.pwLetters;
 
-      ['sumOut', 'toneOut', 'goalOut', 'convOut', 'pwOut'].forEach((id) => {
+      ['charOut', 'sumOut', 'convOut', 'pwOut'].forEach((id) => {
         const el = document.getElementById(id);
         if (!el.dataset.default || el.dataset.default === 'true') {
           setOutput(id, t.defaults[id], true);
@@ -485,6 +471,145 @@
 
     function toggleLanguage() {
       applyLanguage(currentLang === 'ko' ? 'en' : 'ko');
+    }
+
+    function drawImageCover(ctx, img, size) {
+      const scale = Math.max(size / img.width, size / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (size - w) / 2;
+      const y = (size - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+    }
+
+    function toonEffect(ctx, size) {
+      const image = ctx.getImageData(0, 0, size, size);
+      const data = image.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.min(255, Math.round(data[i] / 48) * 48 + 8);
+        data[i + 1] = Math.min(255, Math.round(data[i + 1] / 48) * 48 + 8);
+        data[i + 2] = Math.min(255, Math.round(data[i + 2] / 48) * 48 + 8);
+      }
+
+      const gray = new Uint8ClampedArray(size * size);
+      for (let i = 0, p = 0; i < gray.length; i++, p += 4) {
+        gray[i] = (data[p] * 0.299 + data[p + 1] * 0.587 + data[p + 2] * 0.114) | 0;
+      }
+
+      for (let y = 1; y < size - 1; y++) {
+        for (let x = 1; x < size - 1; x++) {
+          const idx = y * size + x;
+          const gx = gray[idx + 1] - gray[idx - 1];
+          const gy = gray[idx + size] - gray[idx - size];
+          const edge = Math.sqrt(gx * gx + gy * gy);
+          if (edge > 32) {
+            const p = idx * 4;
+            data[p] = data[p] * 0.35;
+            data[p + 1] = data[p + 1] * 0.35;
+            data[p + 2] = data[p + 2] * 0.35;
+          }
+        }
+      }
+
+      ctx.putImageData(image, 0, 0);
+    }
+
+    function renderCanvasPlaceholder() {
+      const c = document.getElementById('charCanvas');
+      const ctx = c.getContext('2d');
+      const t = I18N[currentLang];
+      ctx.clearRect(0, 0, c.width, c.height);
+      const g = ctx.createLinearGradient(0, 0, c.width, c.height);
+      g.addColorStop(0, '#dce7f5');
+      g.addColorStop(1, '#f5ddcf');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      ctx.font = '600 18px Space Grotesk, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(t.charBtn, c.width / 2, c.height / 2);
+    }
+
+    function onPhotoSelected(event) {
+      const t = I18N[currentLang];
+      const file = event.target.files[0];
+      if (!file) {
+        uploadedImage = null;
+        characterReady = false;
+        setOutput('charOut', t.defaults.charOut, true);
+        renderCanvasPlaceholder();
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          uploadedImage = img;
+          characterReady = false;
+          setOutput('charOut', t.msg.photoLoaded, false);
+          const c = document.getElementById('charCanvas');
+          const ctx = c.getContext('2d');
+          ctx.clearRect(0, 0, c.width, c.height);
+          drawImageCover(ctx, img, c.width);
+        };
+        img.onerror = () => {
+          uploadedImage = null;
+          characterReady = false;
+          setOutput('charOut', t.msg.photoError, false);
+          renderCanvasPlaceholder();
+        };
+        img.src = reader.result;
+      };
+      reader.onerror = () => {
+        uploadedImage = null;
+        characterReady = false;
+        setOutput('charOut', t.msg.photoError, false);
+        renderCanvasPlaceholder();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function generateCharacter() {
+      const t = I18N[currentLang];
+      if (!uploadedImage) {
+        setOutput('charOut', t.msg.photoFirst, false);
+        return;
+      }
+
+      const c = document.getElementById('charCanvas');
+      const ctx = c.getContext('2d');
+      const size = c.width;
+
+      const bg = ctx.createLinearGradient(0, 0, size, size);
+      bg.addColorStop(0, '#f9c78d');
+      bg.addColorStop(1, '#8fc8ff');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, size, size);
+
+      drawImageCover(ctx, uploadedImage, size);
+      toonEffect(ctx, size);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(6, 6, size - 12, size - 12);
+
+      characterReady = true;
+      setOutput('charOut', t.msg.charDone, false);
+    }
+
+    function downloadCharacter() {
+      if (!characterReady) {
+        const t = I18N[currentLang];
+        setOutput('charOut', t.msg.photoFirst, false);
+        return;
+      }
+      const c = document.getElementById('charCanvas');
+      const link = document.createElement('a');
+      link.download = 'character-avatar.png';
+      link.href = c.toDataURL('image/png');
+      link.click();
     }
 
     function summarizeText() {
@@ -526,63 +651,6 @@
       setOutput('sumOut', summary, false);
     }
 
-    function transformTone() {
-      const t = I18N[currentLang];
-      const input = document.getElementById('toneInput').value.trim();
-      const type = document.getElementById('toneType').value;
-      if (!input) {
-        setOutput('toneOut', t.msg.enterSentence, false);
-        return;
-      }
-
-      let result = input;
-      if (currentLang === 'ko') {
-        if (type === 'formal') {
-          result = result
-            .replace(/해줘/g, '해주세요')
-            .replace(/해라/g, '해주시기 바랍니다')
-            .replace(/할게/g, '하겠습니다')
-            .replace(/고마워/g, '감사합니다');
-          if (!/[.!?]$/.test(result)) result += '.';
-        } else {
-          result = result
-            .replace(/해주세요/g, '해줘')
-            .replace(/하시기 바랍니다/g, '해')
-            .replace(/하겠습니다/g, '할게')
-            .replace(/감사합니다/g, '고마워');
-        }
-      } else {
-        if (type === 'formal') {
-          result = result
-            .replace(/can't/gi, 'cannot')
-            .replace(/won't/gi, 'will not')
-            .replace(/pls/gi, 'please')
-            .replace(/thanks/gi, 'thank you');
-          if (!/[.!?]$/.test(result)) result += '.';
-        } else {
-          result = result
-            .replace(/cannot/gi, "can't")
-            .replace(/will not/gi, "won't")
-            .replace(/please/gi, 'pls')
-            .replace(/thank you/gi, 'thanks');
-        }
-      }
-
-      setOutput('toneOut', result, false);
-    }
-
-    function breakGoal() {
-      const t = I18N[currentLang];
-      const goal = document.getElementById('goalInput').value.trim();
-      if (!goal) {
-        setOutput('goalOut', t.msg.enterGoal, false);
-        return;
-      }
-
-      const steps = t.goalSteps(goal);
-      setOutput('goalOut', steps.map((s, i) => `${i + 1}. ${s}`).join('\n'), false);
-    }
-
     function convertUnit() {
       const t = I18N[currentLang];
       const value = Number(document.getElementById('convValue').value);
@@ -621,11 +689,14 @@
       setOutput('pwOut', pw, false);
     }
 
+    document.getElementById('charInput').addEventListener('change', onPhotoSelected);
+
     const savedTheme = localStorage.getItem('themeMode');
     const savedLang = localStorage.getItem('langMode');
 
     applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
     applyLanguage(savedLang === 'en' ? 'en' : 'ko');
+    renderCanvasPlaceholder();
   </script>
 </body>
 </html>
