@@ -158,7 +158,7 @@
 
     .char-row {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto auto auto;
       gap: 10px;
       align-items: center;
     }
@@ -248,6 +248,7 @@
         <div class="char-row">
           <input id="charInput" type="file" accept="image/*" />
           <button id="charBtn" type="button" onclick="generateCharacter()"></button>
+          <button id="charRerollBtn" type="button" onclick="rerollCharacter()"></button>
           <button id="charDownloadBtn" type="button" class="ghost" onclick="downloadCharacter()"></button>
         </div>
         <div class="canvas-wrap">
@@ -301,19 +302,23 @@
     let currentLang = 'ko';
     let uploadedImage = null;
     let characterReady = false;
+    let lastType = '';
+
+    const CHARACTER_TYPES = ['cat', 'fox', 'bear', 'panda', 'robot'];
 
     const I18N = {
       ko: {
         htmlLang: 'ko',
         title: 'AI + 실용 툴 스튜디오',
         heroTitle: 'AI + 실용 툴 스튜디오',
-        heroDesc: '사진 기반 캐릭터 생성 기능을 포함해 핵심 4가지 기능을 제공합니다.',
+        heroDesc: '사진을 보고 닮은 동물/물체 스타일로 얼굴을 합성하는 기능을 포함합니다.',
         langToggle: 'English',
         themeLight: '화이트모드',
         themeDark: '블랙모드',
-        charTitle: '1) 사진 기반 캐릭터 생성기',
-        charDesc: '사진을 업로드하면 닮은 느낌의 카툰 스타일 캐릭터로 변환합니다.',
-        charBtn: '캐릭터 만들기',
+        charTitle: '1) 닮은꼴 합성 생성기',
+        charDesc: '사진을 분석해 "이 사람은 이거 닮았네" 타입을 추천하고, 해당 캐릭터에 얼굴을 합성합니다.',
+        charBtn: '닮은꼴 만들기',
+        charRerollBtn: '다른 추천',
         charDownloadBtn: '이미지 저장',
         sumTitle: '2) AI 텍스트 요약기',
         sumDesc: '긴 글에서 핵심 문장만 간단히 추출합니다.',
@@ -333,8 +338,9 @@
         pwAll: '영문+숫자+특수문자',
         pwAlnum: '영문+숫자',
         pwLetters: '영문만',
+        typeNames: { cat: '고양이', fox: '여우', bear: '곰', panda: '판다', robot: '로봇' },
         defaults: {
-          charOut: '업로드 후 캐릭터 만들기를 누르세요.',
+          charOut: '사진을 올린 뒤 닮은꼴 만들기를 눌러주세요.',
           sumOut: '결과가 여기에 표시됩니다.',
           convOut: '변환 결과가 여기에 표시됩니다.',
           pwOut: '생성된 비밀번호가 여기에 표시됩니다.'
@@ -343,9 +349,10 @@
           enterText: '텍스트를 먼저 입력하세요.',
           enterNumber: '숫자 값을 입력하세요.',
           photoFirst: '먼저 사진을 업로드하세요.',
-          photoLoaded: '사진이 로드되었습니다. 캐릭터 만들기를 눌러주세요.',
+          photoLoaded: '사진이 로드되었습니다. 닮은꼴 만들기를 눌러주세요.',
           photoError: '이미지를 읽지 못했습니다. 다른 파일로 시도하세요.',
-          charDone: '캐릭터 생성이 완료되었습니다.'
+          charDone: (name) => `추천 결과: ${name} 닮은꼴로 얼굴 합성이 완료되었습니다.`,
+          rerolled: (name) => `다른 추천 적용: ${name} 닮은꼴로 다시 만들었습니다.`
         },
         summaryKeywords: ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략']
       },
@@ -353,13 +360,14 @@
         htmlLang: 'en',
         title: 'AI + Practical Tools Studio',
         heroTitle: 'AI + Practical Tools Studio',
-        heroDesc: 'Includes a photo-to-character feature with four practical tools.',
+        heroDesc: 'Includes a look-alike compositor that places your face on a recommended animal/object style.',
         langToggle: '한국어',
         themeLight: 'Light Mode',
         themeDark: 'Dark Mode',
-        charTitle: '1) Photo Character Maker',
-        charDesc: 'Upload a photo and convert it into a look-alike cartoon style character.',
-        charBtn: 'Create Character',
+        charTitle: '1) Look-Alike Composer',
+        charDesc: 'Analyzes your photo, picks a look-alike type, then composites your face into that character.',
+        charBtn: 'Create Look-Alike',
+        charRerollBtn: 'Another Pick',
         charDownloadBtn: 'Save Image',
         sumTitle: '2) AI Text Summarizer',
         sumDesc: 'Extract key sentences from long text quickly.',
@@ -379,8 +387,9 @@
         pwAll: 'Letters + Numbers + Symbols',
         pwAlnum: 'Letters + Numbers',
         pwLetters: 'Letters only',
+        typeNames: { cat: 'Cat', fox: 'Fox', bear: 'Bear', panda: 'Panda', robot: 'Robot' },
         defaults: {
-          charOut: 'Upload a photo, then click create character.',
+          charOut: 'Upload a photo, then click create look-alike.',
           sumOut: 'Results will appear here.',
           convOut: 'Converted result will appear here.',
           pwOut: 'Generated password will appear here.'
@@ -389,9 +398,10 @@
           enterText: 'Please enter text first.',
           enterNumber: 'Please enter a numeric value.',
           photoFirst: 'Please upload a photo first.',
-          photoLoaded: 'Photo loaded. Click create character.',
+          photoLoaded: 'Photo loaded. Click create look-alike.',
           photoError: 'Could not read this image. Try another file.',
-          charDone: 'Character creation is complete.'
+          charDone: (name) => `Recommendation: ${name}. Face compositing is complete.`,
+          rerolled: (name) => `Another recommendation applied: ${name}.`
         },
         summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'efficient', 'result', 'strategy']
       }
@@ -427,7 +437,6 @@
 
       document.documentElement.lang = t.htmlLang;
       document.title = t.title;
-
       document.getElementById('heroTitle').textContent = t.heroTitle;
       document.getElementById('heroDesc').textContent = t.heroDesc;
       document.getElementById('langToggle').textContent = t.langToggle;
@@ -435,6 +444,7 @@
       document.getElementById('charTitle').textContent = t.charTitle;
       document.getElementById('charDesc').textContent = t.charDesc;
       document.getElementById('charBtn').textContent = t.charBtn;
+      document.getElementById('charRerollBtn').textContent = t.charRerollBtn;
       document.getElementById('charDownloadBtn').textContent = t.charDownloadBtn;
 
       document.getElementById('sumTitle').textContent = t.sumTitle;
@@ -482,39 +492,6 @@
       ctx.drawImage(img, x, y, w, h);
     }
 
-    function toonEffect(ctx, size) {
-      const image = ctx.getImageData(0, 0, size, size);
-      const data = image.data;
-
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = Math.min(255, Math.round(data[i] / 48) * 48 + 8);
-        data[i + 1] = Math.min(255, Math.round(data[i + 1] / 48) * 48 + 8);
-        data[i + 2] = Math.min(255, Math.round(data[i + 2] / 48) * 48 + 8);
-      }
-
-      const gray = new Uint8ClampedArray(size * size);
-      for (let i = 0, p = 0; i < gray.length; i++, p += 4) {
-        gray[i] = (data[p] * 0.299 + data[p + 1] * 0.587 + data[p + 2] * 0.114) | 0;
-      }
-
-      for (let y = 1; y < size - 1; y++) {
-        for (let x = 1; x < size - 1; x++) {
-          const idx = y * size + x;
-          const gx = gray[idx + 1] - gray[idx - 1];
-          const gy = gray[idx + size] - gray[idx - size];
-          const edge = Math.sqrt(gx * gx + gy * gy);
-          if (edge > 32) {
-            const p = idx * 4;
-            data[p] = data[p] * 0.35;
-            data[p + 1] = data[p + 1] * 0.35;
-            data[p + 2] = data[p + 2] * 0.35;
-          }
-        }
-      }
-
-      ctx.putImageData(image, 0, 0);
-    }
-
     function renderCanvasPlaceholder() {
       const c = document.getElementById('charCanvas');
       const ctx = c.getContext('2d');
@@ -525,10 +502,184 @@
       g.addColorStop(1, '#f5ddcf');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, c.width, c.height);
-      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      ctx.fillStyle = 'rgba(0,0,0,0.18)';
       ctx.font = '600 18px Space Grotesk, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(t.charBtn, c.width / 2, c.height / 2);
+    }
+
+    function analyzeTraits(img) {
+      const off = document.createElement('canvas');
+      off.width = 64;
+      off.height = 64;
+      const ctx = off.getContext('2d');
+      drawImageCover(ctx, img, 64);
+      const d = ctx.getImageData(0, 0, 64, 64).data;
+
+      let r = 0, g = 0, b = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        r += d[i];
+        g += d[i + 1];
+        b += d[i + 2];
+      }
+      const n = d.length / 4;
+      r /= n;
+      g /= n;
+      b /= n;
+      const brightness = (r + g + b) / 3;
+      const sat = Math.max(r, g, b) - Math.min(r, g, b);
+      return { r, g, b, brightness, sat };
+    }
+
+    function pickCharacterType(traits, excludeType = '') {
+      const scores = {
+        cat: traits.brightness * 0.35 + traits.sat * 0.55 + traits.g * 0.1,
+        fox: traits.r * 0.65 + traits.sat * 0.25 - traits.b * 0.2,
+        bear: (255 - traits.brightness) * 0.8 + traits.r * 0.2,
+        panda: traits.brightness * 0.6 + (255 - traits.sat) * 0.4,
+        robot: traits.b * 0.6 + traits.g * 0.3 + traits.sat * 0.1
+      };
+
+      const ordered = Object.entries(scores)
+        .sort((a, b) => b[1] - a[1])
+        .map((v) => v[0]);
+
+      if (!excludeType) return ordered[0];
+      const next = ordered.find((type) => type !== excludeType);
+      return next || ordered[0];
+    }
+
+    function drawTemplate(ctx, type, size) {
+      ctx.clearRect(0, 0, size, size);
+
+      const bg = ctx.createLinearGradient(0, 0, size, size);
+      if (type === 'fox') {
+        bg.addColorStop(0, '#ffe1b8');
+        bg.addColorStop(1, '#ffb86e');
+      } else if (type === 'bear') {
+        bg.addColorStop(0, '#d2b48c');
+        bg.addColorStop(1, '#8f6a4a');
+      } else if (type === 'panda') {
+        bg.addColorStop(0, '#f7f7f7');
+        bg.addColorStop(1, '#d8dde2');
+      } else if (type === 'robot') {
+        bg.addColorStop(0, '#b9d9ff');
+        bg.addColorStop(1, '#88a9d2');
+      } else {
+        bg.addColorStop(0, '#ffd6dc');
+        bg.addColorStop(1, '#ffc2a9');
+      }
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.42)';
+      ctx.beginPath();
+      ctx.arc(size * 0.18, size * 0.2, size * 0.2, 0, Math.PI * 2);
+      ctx.arc(size * 0.84, size * 0.12, size * 0.16, 0, Math.PI * 2);
+      ctx.fill();
+
+      const bodyY = size * 0.68;
+      if (type === 'robot') {
+        ctx.fillStyle = '#5a6f8c';
+        ctx.fillRect(size * 0.28, bodyY - 20, size * 0.44, size * 0.28);
+        ctx.fillStyle = '#9ec1ea';
+        ctx.fillRect(size * 0.33, bodyY - 4, size * 0.34, size * 0.1);
+      } else {
+        const bodyColor = type === 'bear' ? '#6f4b35' : type === 'fox' ? '#d06f2f' : type === 'panda' ? '#212121' : '#cb8a8a';
+        ctx.fillStyle = bodyColor;
+        ctx.beginPath();
+        ctx.ellipse(size * 0.5, bodyY + 24, size * 0.21, size * 0.18, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (type === 'cat') {
+        ctx.fillStyle = '#c9847c';
+        ctx.beginPath();
+        ctx.moveTo(size * 0.29, size * 0.22);
+        ctx.lineTo(size * 0.37, size * 0.06);
+        ctx.lineTo(size * 0.43, size * 0.23);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(size * 0.57, size * 0.23);
+        ctx.lineTo(size * 0.63, size * 0.06);
+        ctx.lineTo(size * 0.71, size * 0.22);
+        ctx.fill();
+      }
+
+      if (type === 'fox') {
+        ctx.fillStyle = '#cd6829';
+        ctx.beginPath();
+        ctx.moveTo(size * 0.28, size * 0.24);
+        ctx.lineTo(size * 0.34, size * 0.06);
+        ctx.lineTo(size * 0.44, size * 0.24);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(size * 0.56, size * 0.24);
+        ctx.lineTo(size * 0.66, size * 0.06);
+        ctx.lineTo(size * 0.72, size * 0.24);
+        ctx.fill();
+      }
+
+      if (type === 'bear' || type === 'panda') {
+        const earColor = type === 'panda' ? '#1b1b1b' : '#5f3f2f';
+        ctx.fillStyle = earColor;
+        ctx.beginPath();
+        ctx.arc(size * 0.33, size * 0.16, size * 0.08, 0, Math.PI * 2);
+        ctx.arc(size * 0.67, size * 0.16, size * 0.08, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (type === 'robot') {
+        ctx.fillStyle = '#4f6078';
+        ctx.fillRect(size * 0.24, size * 0.18, size * 0.52, size * 0.08);
+      }
+    }
+
+    function drawFaceCutout(ctx, img, size) {
+      const faceX = size * 0.5;
+      const faceY = size * 0.44;
+      const faceR = size * 0.18;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(faceX, faceY, faceR, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      const srcW = img.width * 0.52;
+      const srcH = img.height * 0.52;
+      const srcX = (img.width - srcW) / 2;
+      const srcY = img.height * 0.12;
+      ctx.drawImage(img, srcX, srcY, srcW, srcH, faceX - faceR, faceY - faceR, faceR * 2, faceR * 2);
+      ctx.restore();
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(faceX, faceY, faceR, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    function renderCharacter(type, statusBuilder) {
+      const t = I18N[currentLang];
+      const c = document.getElementById('charCanvas');
+      const ctx = c.getContext('2d');
+      const size = c.width;
+
+      drawTemplate(ctx, type, size);
+      drawFaceCutout(ctx, uploadedImage, size);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(10, size - 44, size - 20, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 15px IBM Plex Sans KR, sans-serif';
+      ctx.textAlign = 'center';
+      const label = t.typeNames[type];
+      ctx.fillText(label, size / 2, size - 23);
+
+      characterReady = true;
+      lastType = type;
+      setOutput('charOut', statusBuilder(label), false);
     }
 
     function onPhotoSelected(event) {
@@ -578,25 +729,21 @@
         return;
       }
 
-      const c = document.getElementById('charCanvas');
-      const ctx = c.getContext('2d');
-      const size = c.width;
+      const traits = analyzeTraits(uploadedImage);
+      const type = pickCharacterType(traits);
+      renderCharacter(type, t.msg.charDone);
+    }
 
-      const bg = ctx.createLinearGradient(0, 0, size, size);
-      bg.addColorStop(0, '#f9c78d');
-      bg.addColorStop(1, '#8fc8ff');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, size, size);
+    function rerollCharacter() {
+      const t = I18N[currentLang];
+      if (!uploadedImage) {
+        setOutput('charOut', t.msg.photoFirst, false);
+        return;
+      }
 
-      drawImageCover(ctx, uploadedImage, size);
-      toonEffect(ctx, size);
-
-      ctx.strokeStyle = 'rgba(255,255,255,0.65)';
-      ctx.lineWidth = 8;
-      ctx.strokeRect(6, 6, size - 12, size - 12);
-
-      characterReady = true;
-      setOutput('charOut', t.msg.charDone, false);
+      const traits = analyzeTraits(uploadedImage);
+      const type = pickCharacterType(traits, lastType);
+      renderCharacter(type, t.msg.rerolled);
     }
 
     function downloadCharacter() {
@@ -607,7 +754,7 @@
       }
       const c = document.getElementById('charCanvas');
       const link = document.createElement('a');
-      link.download = 'character-avatar.png';
+      link.download = 'lookalike-character.png';
       link.href = c.toDataURL('image/png');
       link.click();
     }
