@@ -57,18 +57,20 @@ function buildPrompt({ lang, animalType, traitsText, reroll }) {
 
   if (isEn) {
     return (
-      `Ultra-detailed anime portrait of a real person wearing ${animalType} animal hoodie costume, ` +
-      `cinematic lighting, realistic eyes and skin texture, high detail face rendering, natural asymmetry, ` +
-      `expression fidelity, premium illustration quality, no text, no watermark. ` +
+      `High-quality 2D anime character portrait based on a real person likeness, wearing a ${animalType} animal hoodie costume, ` +
+      `clean cel-shaded animation style, expressive eyes, natural face asymmetry, refined line-art, ` +
+      `head and hairstyle fully visible, face fully visible, centered bust portrait, no cropping of top head, ` +
+      `cinematic but soft lighting, premium character design quality, no text, no watermark, not photo collage. ` +
       `Use this outfit vibe reference: ${OUTFIT_REFERENCE_URL}. ` +
       `Face traits: ${traitsText}. ${variation}`.trim()
     );
   }
 
   return (
-    `${animalType} 동물 후드 의상을 입은 실사형 애니 초상화, 시네마틱 조명, ` +
-    `눈빛/피부 질감의 사실적 표현, 얼굴 디테일 고해상도, 자연스러운 좌우 비대칭, ` +
-    `표정 재현도 강화, 고급 일러스트 퀄리티, 텍스트/워터마크 없음. ` +
+    `${animalType} 동물 후드 의상을 입은 2D 애니메이션 캐릭터 초상화, ` +
+    `깔끔한 셀 셰이딩, 또렷한 선화, 표정 재현 강조, 자연스러운 좌우 비대칭, ` +
+    `머리 전체와 헤어스타일이 프레임 안에 보이게, 얼굴 전체가 잘리지 않게, 중앙 상반신 구도, ` +
+    `시네마틱하지만 부드러운 조명, 고급 캐릭터 일러스트 퀄리티, 텍스트/워터마크 없음, 합성 느낌 금지. ` +
     `의상 분위기 참고: ${OUTFIT_REFERENCE_URL}. ` +
     `얼굴 특징: ${traitsText}. ${variation}`.trim()
   );
