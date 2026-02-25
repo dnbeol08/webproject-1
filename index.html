@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI + 실용 툴 스튜디오</title>
+  <title>AI + Practical Tools Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
@@ -11,10 +11,16 @@
     :root {
       --bg-1: #f7f4ec;
       --bg-2: #e2efdc;
+      --spot-1: #ffd9b8;
+      --spot-2: #cce8bc;
       --ink: #1c2a20;
       --primary: #1e7a52;
+      --primary-hover: #146741;
       --primary-2: #f08534;
       --card: rgba(255, 255, 255, 0.8);
+      --hero-bg: rgba(255, 255, 255, 0.72);
+      --input-bg: #ffffff;
+      --out-bg: rgba(255, 255, 255, 0.95);
       --line: rgba(28, 42, 32, 0.12);
       --shadow: 0 14px 32px rgba(20, 38, 28, 0.12);
     }
@@ -27,9 +33,27 @@
       font-family: "IBM Plex Sans KR", sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at 12% 12%, #ffd9b8 0, transparent 28%),
-        radial-gradient(circle at 87% 80%, #cce8bc 0, transparent 32%),
+        radial-gradient(circle at 12% 12%, var(--spot-1) 0, transparent 28%),
+        radial-gradient(circle at 87% 80%, var(--spot-2) 0, transparent 32%),
         linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      transition: background 240ms ease, color 240ms ease;
+    }
+
+    body.dark-mode {
+      --bg-1: #101417;
+      --bg-2: #1a232c;
+      --spot-1: #253246;
+      --spot-2: #203a31;
+      --ink: #eaf2f8;
+      --primary: #3f9bff;
+      --primary-hover: #2e85e5;
+      --primary-2: #ef9d57;
+      --card: rgba(22, 30, 40, 0.84);
+      --hero-bg: rgba(20, 28, 38, 0.82);
+      --input-bg: #111922;
+      --out-bg: rgba(15, 22, 31, 0.95);
+      --line: rgba(234, 242, 248, 0.16);
+      --shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
     }
 
     .wrap {
@@ -38,13 +62,25 @@
     }
 
     .hero {
-      background: rgba(255, 255, 255, 0.72);
+      background: var(--hero-bg);
       border: 1px solid var(--line);
       border-radius: 22px;
       padding: 26px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(6px);
       animation: rise 650ms ease;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hero-copy {
+      flex: 1 1 520px;
     }
 
     .hero h1 {
@@ -59,6 +95,19 @@
       line-height: 1.55;
       max-width: 70ch;
       opacity: 0.92;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .theme-toggle,
+    .lang-toggle {
+      min-width: 120px;
+      align-self: center;
     }
 
     .grid {
@@ -96,7 +145,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 10px 12px;
-      background: #fff;
+      background: var(--input-bg);
       color: var(--ink);
       font: inherit;
       margin-bottom: 10px;
@@ -123,7 +172,7 @@
     }
 
     button:hover {
-      background: #146741;
+      background: var(--primary-hover);
       transform: translateY(-1px);
     }
 
@@ -133,7 +182,7 @@
 
     .out {
       margin-top: 10px;
-      background: rgba(255, 255, 255, 0.95);
+      background: var(--out-bg);
       border: 1px dashed var(--line);
       border-radius: 12px;
       padding: 12px;
@@ -151,102 +200,316 @@
       .grid { grid-template-columns: 1fr; }
       .tool.full { grid-column: auto; }
       .row { grid-template-columns: 1fr; }
+      .theme-toggle, .lang-toggle { width: 100%; }
+      .hero-actions { width: 100%; }
     }
   </style>
 </head>
 <body>
   <main class="wrap">
     <section class="hero">
-      <h1>AI + 실용 툴 스튜디오</h1>
-      <p>하나의 페이지에서 바로 쓸 수 있는 5가지 기능입니다. 지금은 경량 로직으로 구성했고, 이후 API 연동/기능 고도화하기 쉽게 구조를 나눠두었습니다.</p>
+      <div class="hero-top">
+        <div class="hero-copy">
+          <h1 id="heroTitle"></h1>
+          <p id="heroDesc"></p>
+        </div>
+        <div class="hero-actions">
+          <button id="langToggle" class="lang-toggle" type="button" onclick="toggleLanguage()"></button>
+          <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()"></button>
+        </div>
+      </div>
     </section>
 
     <section class="grid">
       <article class="tool full">
-        <h2>1) AI 텍스트 요약기</h2>
-        <p>긴 글에서 핵심 문장만 간단히 추출합니다.</p>
-        <textarea id="sumInput" placeholder="요약할 텍스트를 입력하세요."></textarea>
-        <button onclick="summarizeText()">요약하기</button>
-        <div id="sumOut" class="out">결과가 여기에 표시됩니다.</div>
+        <h2 id="sumTitle"></h2>
+        <p id="sumDesc"></p>
+        <textarea id="sumInput"></textarea>
+        <button id="sumBtn" onclick="summarizeText()"></button>
+        <div id="sumOut" class="out"></div>
       </article>
 
       <article class="tool">
-        <h2>2) AI 문장 톤 변환기</h2>
-        <p>문장을 공손/캐주얼 톤으로 빠르게 바꿉니다.</p>
-        <textarea id="toneInput" placeholder="변환할 문장을 입력하세요."></textarea>
+        <h2 id="toneTitle"></h2>
+        <p id="toneDesc"></p>
+        <textarea id="toneInput"></textarea>
         <select id="toneType">
-          <option value="formal">공손한 톤</option>
-          <option value="casual">캐주얼 톤</option>
+          <option value="formal" id="toneFormal"></option>
+          <option value="casual" id="toneCasual"></option>
         </select>
-        <button onclick="transformTone()">변환하기</button>
-        <div id="toneOut" class="out">변환 결과가 여기에 표시됩니다.</div>
+        <button id="toneBtn" onclick="transformTone()"></button>
+        <div id="toneOut" class="out"></div>
       </article>
 
       <article class="tool">
-        <h2>3) 스마트 목표 분해기</h2>
-        <p>큰 목표를 바로 실행 가능한 단계로 나눕니다.</p>
-        <input id="goalInput" type="text" placeholder="예: 30일 안에 포트폴리오 사이트 완성" />
-        <button onclick="breakGoal()">단계 만들기</button>
-        <div id="goalOut" class="out">실행 단계가 여기에 표시됩니다.</div>
+        <h2 id="goalTitle"></h2>
+        <p id="goalDesc"></p>
+        <input id="goalInput" type="text" />
+        <button id="goalBtn" onclick="breakGoal()"></button>
+        <div id="goalOut" class="out"></div>
       </article>
 
       <article class="tool">
-        <h2>4) 단위 변환기</h2>
-        <p>길이(km↔mile), 온도(C↔F)를 변환합니다.</p>
+        <h2 id="convTitle"></h2>
+        <p id="convDesc"></p>
         <div class="row">
-          <input id="convValue" type="number" placeholder="값 입력" />
+          <input id="convValue" type="number" />
           <select id="convType">
-            <option value="km-mile">km → mile</option>
-            <option value="mile-km">mile → km</option>
-            <option value="c-f">°C → °F</option>
-            <option value="f-c">°F → °C</option>
+            <option value="km-mile" id="convKmMile"></option>
+            <option value="mile-km" id="convMileKm"></option>
+            <option value="c-f" id="convCF"></option>
+            <option value="f-c" id="convFC"></option>
           </select>
         </div>
-        <button onclick="convertUnit()">변환하기</button>
-        <div id="convOut" class="out">변환 결과가 여기에 표시됩니다.</div>
+        <button id="convBtn" onclick="convertUnit()"></button>
+        <div id="convOut" class="out"></div>
       </article>
 
       <article class="tool">
-        <h2>5) 안전 비밀번호 생성기</h2>
-        <p>길이/문자 옵션을 선택해 강한 비밀번호를 만듭니다.</p>
+        <h2 id="pwTitle"></h2>
+        <p id="pwDesc"></p>
         <div class="row">
           <input id="pwLen" type="number" min="8" max="64" value="14" />
           <select id="pwMode">
-            <option value="all">영문+숫자+특수문자</option>
-            <option value="alnum">영문+숫자</option>
-            <option value="letters">영문만</option>
+            <option value="all" id="pwAll"></option>
+            <option value="alnum" id="pwAlnum"></option>
+            <option value="letters" id="pwLetters"></option>
           </select>
         </div>
-        <button class="ghost" onclick="generatePassword()">생성하기</button>
-        <div id="pwOut" class="out">생성된 비밀번호가 여기에 표시됩니다.</div>
+        <button id="pwBtn" class="ghost" onclick="generatePassword()"></button>
+        <div id="pwOut" class="out"></div>
       </article>
     </section>
   </main>
 
   <script>
+    let currentLang = 'ko';
+
+    const I18N = {
+      ko: {
+        htmlLang: 'ko',
+        title: 'AI + 실용 툴 스튜디오',
+        heroTitle: 'AI + 실용 툴 스튜디오',
+        heroDesc: '하나의 페이지에서 바로 쓸 수 있는 5가지 기능입니다. 지금은 경량 로직으로 구성했고, 이후 API 연동/기능 고도화하기 쉽게 구조를 나눠두었습니다.',
+        langToggle: 'English',
+        themeLight: '화이트모드',
+        themeDark: '블랙모드',
+        sumTitle: '1) AI 텍스트 요약기',
+        sumDesc: '긴 글에서 핵심 문장만 간단히 추출합니다.',
+        sumBtn: '요약하기',
+        sumPlaceholder: '요약할 텍스트를 입력하세요.',
+        toneTitle: '2) AI 문장 톤 변환기',
+        toneDesc: '문장을 공손/캐주얼 톤으로 빠르게 바꿉니다.',
+        toneBtn: '변환하기',
+        tonePlaceholder: '변환할 문장을 입력하세요.',
+        toneFormal: '공손한 톤',
+        toneCasual: '캐주얼 톤',
+        goalTitle: '3) 스마트 목표 분해기',
+        goalDesc: '큰 목표를 바로 실행 가능한 단계로 나눕니다.',
+        goalBtn: '단계 만들기',
+        goalPlaceholder: '예: 30일 안에 포트폴리오 사이트 완성',
+        convTitle: '4) 단위 변환기',
+        convDesc: '길이(km↔mile), 온도(C↔F)를 변환합니다.',
+        convBtn: '변환하기',
+        convValuePlaceholder: '값 입력',
+        convKmMile: 'km → mile',
+        convMileKm: 'mile → km',
+        convCF: '°C → °F',
+        convFC: '°F → °C',
+        pwTitle: '5) 안전 비밀번호 생성기',
+        pwDesc: '길이/문자 옵션을 선택해 강한 비밀번호를 만듭니다.',
+        pwBtn: '생성하기',
+        pwAll: '영문+숫자+특수문자',
+        pwAlnum: '영문+숫자',
+        pwLetters: '영문만',
+        defaults: {
+          sumOut: '결과가 여기에 표시됩니다.',
+          toneOut: '변환 결과가 여기에 표시됩니다.',
+          goalOut: '실행 단계가 여기에 표시됩니다.',
+          convOut: '변환 결과가 여기에 표시됩니다.',
+          pwOut: '생성된 비밀번호가 여기에 표시됩니다.'
+        },
+        msg: {
+          enterText: '텍스트를 먼저 입력하세요.',
+          enterSentence: '문장을 먼저 입력하세요.',
+          enterGoal: '목표를 먼저 입력하세요.',
+          enterNumber: '숫자 값을 입력하세요.'
+        },
+        goalSteps: (goal) => [
+          `목표 정의: "${goal}"를 구체적 완료 기준 1줄로 작성`,
+          '분석: 필요한 기술/자료/시간을 3가지로 정리',
+          '실행 계획: 이번 주에 끝낼 세부 작업 3개 선정',
+          '실행: 오늘 바로 시작할 30분 작업 1개 수행',
+          '검토: 결과 체크 후 다음 개선점 1개 기록'
+        ],
+        summaryKeywords: ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략']
+      },
+      en: {
+        htmlLang: 'en',
+        title: 'AI + Practical Tools Studio',
+        heroTitle: 'AI + Practical Tools Studio',
+        heroDesc: 'Five useful tools in one page. It currently uses lightweight logic and is structured for easy API integration later.',
+        langToggle: '한국어',
+        themeLight: 'Light Mode',
+        themeDark: 'Dark Mode',
+        sumTitle: '1) AI Text Summarizer',
+        sumDesc: 'Extract key sentences from long text quickly.',
+        sumBtn: 'Summarize',
+        sumPlaceholder: 'Enter text to summarize.',
+        toneTitle: '2) AI Tone Transformer',
+        toneDesc: 'Switch sentence tone between formal and casual.',
+        toneBtn: 'Transform',
+        tonePlaceholder: 'Enter a sentence to transform.',
+        toneFormal: 'Formal tone',
+        toneCasual: 'Casual tone',
+        goalTitle: '3) Smart Goal Breakdown',
+        goalDesc: 'Split a big goal into practical action steps.',
+        goalBtn: 'Build Steps',
+        goalPlaceholder: 'Example: Finish my portfolio website in 30 days',
+        convTitle: '4) Unit Converter',
+        convDesc: 'Convert length (km↔mile) and temperature (C↔F).',
+        convBtn: 'Convert',
+        convValuePlaceholder: 'Enter value',
+        convKmMile: 'km → mile',
+        convMileKm: 'mile → km',
+        convCF: '°C → °F',
+        convFC: '°F → °C',
+        pwTitle: '5) Secure Password Generator',
+        pwDesc: 'Generate a strong password with selectable options.',
+        pwBtn: 'Generate',
+        pwAll: 'Letters + Numbers + Symbols',
+        pwAlnum: 'Letters + Numbers',
+        pwLetters: 'Letters only',
+        defaults: {
+          sumOut: 'Results will appear here.',
+          toneOut: 'Transformed text will appear here.',
+          goalOut: 'Action steps will appear here.',
+          convOut: 'Converted result will appear here.',
+          pwOut: 'Generated password will appear here.'
+        },
+        msg: {
+          enterText: 'Please enter text first.',
+          enterSentence: 'Please enter a sentence first.',
+          enterGoal: 'Please enter a goal first.',
+          enterNumber: 'Please enter a numeric value.'
+        },
+        goalSteps: (goal) => [
+          `Define: write one clear completion line for "${goal}"`,
+          'Analyze: list 3 required skills/resources/time blocks',
+          'Plan: choose 3 tasks to finish this week',
+          'Execute: do one 30-minute task today',
+          'Review: write one improvement for next run'
+        ],
+        summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'efficient', 'result', 'strategy']
+      }
+    };
+
+    function setOutput(id, text, isDefault) {
+      const out = document.getElementById(id);
+      out.textContent = text;
+      out.dataset.default = isDefault ? 'true' : 'false';
+    }
+
+    function updateThemeButtonText() {
+      const t = I18N[currentLang];
+      const isDark = document.body.classList.contains('dark-mode');
+      document.getElementById('themeToggle').textContent = isDark ? t.themeLight : t.themeDark;
+    }
+
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.body.classList.toggle('dark-mode', isDark);
+      localStorage.setItem('themeMode', isDark ? 'dark' : 'light');
+      updateThemeButtonText();
+    }
+
+    function toggleTheme() {
+      const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+      applyTheme(nextTheme);
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang === 'en' ? 'en' : 'ko';
+      const t = I18N[currentLang];
+
+      document.documentElement.lang = t.htmlLang;
+      document.title = t.title;
+
+      document.getElementById('heroTitle').textContent = t.heroTitle;
+      document.getElementById('heroDesc').textContent = t.heroDesc;
+      document.getElementById('langToggle').textContent = t.langToggle;
+
+      document.getElementById('sumTitle').textContent = t.sumTitle;
+      document.getElementById('sumDesc').textContent = t.sumDesc;
+      document.getElementById('sumBtn').textContent = t.sumBtn;
+      document.getElementById('sumInput').placeholder = t.sumPlaceholder;
+
+      document.getElementById('toneTitle').textContent = t.toneTitle;
+      document.getElementById('toneDesc').textContent = t.toneDesc;
+      document.getElementById('toneBtn').textContent = t.toneBtn;
+      document.getElementById('toneInput').placeholder = t.tonePlaceholder;
+      document.getElementById('toneFormal').textContent = t.toneFormal;
+      document.getElementById('toneCasual').textContent = t.toneCasual;
+
+      document.getElementById('goalTitle').textContent = t.goalTitle;
+      document.getElementById('goalDesc').textContent = t.goalDesc;
+      document.getElementById('goalBtn').textContent = t.goalBtn;
+      document.getElementById('goalInput').placeholder = t.goalPlaceholder;
+
+      document.getElementById('convTitle').textContent = t.convTitle;
+      document.getElementById('convDesc').textContent = t.convDesc;
+      document.getElementById('convBtn').textContent = t.convBtn;
+      document.getElementById('convValue').placeholder = t.convValuePlaceholder;
+      document.getElementById('convKmMile').textContent = t.convKmMile;
+      document.getElementById('convMileKm').textContent = t.convMileKm;
+      document.getElementById('convCF').textContent = t.convCF;
+      document.getElementById('convFC').textContent = t.convFC;
+
+      document.getElementById('pwTitle').textContent = t.pwTitle;
+      document.getElementById('pwDesc').textContent = t.pwDesc;
+      document.getElementById('pwBtn').textContent = t.pwBtn;
+      document.getElementById('pwAll').textContent = t.pwAll;
+      document.getElementById('pwAlnum').textContent = t.pwAlnum;
+      document.getElementById('pwLetters').textContent = t.pwLetters;
+
+      ['sumOut', 'toneOut', 'goalOut', 'convOut', 'pwOut'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el.dataset.default || el.dataset.default === 'true') {
+          setOutput(id, t.defaults[id], true);
+        }
+      });
+
+      localStorage.setItem('langMode', currentLang);
+      updateThemeButtonText();
+    }
+
+    function toggleLanguage() {
+      applyLanguage(currentLang === 'ko' ? 'en' : 'ko');
+    }
+
     function summarizeText() {
+      const t = I18N[currentLang];
       const input = document.getElementById('sumInput').value.trim();
-      const out = document.getElementById('sumOut');
       if (!input) {
-        out.textContent = '텍스트를 먼저 입력하세요.';
+        setOutput('sumOut', t.msg.enterText, false);
         return;
       }
 
       const sentences = input
         .replace(/\n+/g, ' ')
-        .split(/(?<=[.!?다요])\s+/)
+        .split(/(?<=[.!?])\s+|(?<=[다요])\s+/)
         .filter(Boolean);
 
       if (sentences.length <= 2) {
-        out.textContent = input;
+        setOutput('sumOut', input, false);
         return;
       }
 
-      const keywords = ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략'];
+      const keywords = t.summaryKeywords;
       const scored = sentences.map((s, i) => {
         let score = s.length * 0.01;
         keywords.forEach((k) => {
-          if (s.includes(k)) score += 1.2;
+          if (s.toLowerCase().includes(k.toLowerCase())) score += 1.2;
         });
         if (i === 0 || i === sentences.length - 1) score += 0.4;
         return { s, i, score };
@@ -260,65 +523,73 @@
         .map((v) => `- ${v.s.trim()}`)
         .join('\n');
 
-      out.textContent = summary;
+      setOutput('sumOut', summary, false);
     }
 
     function transformTone() {
+      const t = I18N[currentLang];
       const input = document.getElementById('toneInput').value.trim();
       const type = document.getElementById('toneType').value;
-      const out = document.getElementById('toneOut');
-
       if (!input) {
-        out.textContent = '문장을 먼저 입력하세요.';
+        setOutput('toneOut', t.msg.enterSentence, false);
         return;
       }
 
       let result = input;
-      if (type === 'formal') {
-        result = result
-          .replace(/해줘/g, '해주세요')
-          .replace(/해라/g, '해주시기 바랍니다')
-          .replace(/할게/g, '하겠습니다')
-          .replace(/고마워/g, '감사합니다');
-        if (!/[.!?]$/.test(result)) result += '.';
+      if (currentLang === 'ko') {
+        if (type === 'formal') {
+          result = result
+            .replace(/해줘/g, '해주세요')
+            .replace(/해라/g, '해주시기 바랍니다')
+            .replace(/할게/g, '하겠습니다')
+            .replace(/고마워/g, '감사합니다');
+          if (!/[.!?]$/.test(result)) result += '.';
+        } else {
+          result = result
+            .replace(/해주세요/g, '해줘')
+            .replace(/하시기 바랍니다/g, '해')
+            .replace(/하겠습니다/g, '할게')
+            .replace(/감사합니다/g, '고마워');
+        }
       } else {
-        result = result
-          .replace(/해주세요/g, '해줘')
-          .replace(/하시기 바랍니다/g, '해')
-          .replace(/하겠습니다/g, '할게')
-          .replace(/감사합니다/g, '고마워');
+        if (type === 'formal') {
+          result = result
+            .replace(/can't/gi, 'cannot')
+            .replace(/won't/gi, 'will not')
+            .replace(/pls/gi, 'please')
+            .replace(/thanks/gi, 'thank you');
+          if (!/[.!?]$/.test(result)) result += '.';
+        } else {
+          result = result
+            .replace(/cannot/gi, "can't")
+            .replace(/will not/gi, "won't")
+            .replace(/please/gi, 'pls')
+            .replace(/thank you/gi, 'thanks');
+        }
       }
 
-      out.textContent = result;
+      setOutput('toneOut', result, false);
     }
 
     function breakGoal() {
+      const t = I18N[currentLang];
       const goal = document.getElementById('goalInput').value.trim();
-      const out = document.getElementById('goalOut');
-
       if (!goal) {
-        out.textContent = '목표를 먼저 입력하세요.';
+        setOutput('goalOut', t.msg.enterGoal, false);
         return;
       }
 
-      const steps = [
-        `목표 정의: "${goal}"를 구체적 완료 기준 1줄로 작성`,
-        '분석: 필요한 기술/자료/시간을 3가지로 정리',
-        '실행 계획: 이번 주에 끝낼 세부 작업 3개 선정',
-        '실행: 오늘 바로 시작할 30분 작업 1개 수행',
-        '검토: 결과 체크 후 다음 개선점 1개 기록'
-      ];
-
-      out.textContent = steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
+      const steps = t.goalSteps(goal);
+      setOutput('goalOut', steps.map((s, i) => `${i + 1}. ${s}`).join('\n'), false);
     }
 
     function convertUnit() {
+      const t = I18N[currentLang];
       const value = Number(document.getElementById('convValue').value);
       const type = document.getElementById('convType').value;
-      const out = document.getElementById('convOut');
 
       if (Number.isNaN(value)) {
-        out.textContent = '숫자 값을 입력하세요.';
+        setOutput('convOut', t.msg.enterNumber, false);
         return;
       }
 
@@ -327,13 +598,12 @@
       if (type === 'mile-km') result = `${value} mile = ${(value / 0.621371).toFixed(4)} km`;
       if (type === 'c-f') result = `${value} °C = ${(value * 9 / 5 + 32).toFixed(2)} °F`;
       if (type === 'f-c') result = `${value} °F = ${((value - 32) * 5 / 9).toFixed(2)} °C`;
-      out.textContent = result;
+      setOutput('convOut', result, false);
     }
 
     function generatePassword() {
       const len = Math.min(64, Math.max(8, Number(document.getElementById('pwLen').value) || 14));
       const mode = document.getElementById('pwMode').value;
-      const out = document.getElementById('pwOut');
 
       const pools = {
         letters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -348,8 +618,14 @@
       for (let i = 0; i < len; i++) {
         pw += chars[rand[i] % chars.length];
       }
-      out.textContent = pw;
+      setOutput('pwOut', pw, false);
     }
+
+    const savedTheme = localStorage.getItem('themeMode');
+    const savedLang = localStorage.getItem('langMode');
+
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    applyLanguage(savedLang === 'en' ? 'en' : 'ko');
   </script>
 </body>
 </html>
