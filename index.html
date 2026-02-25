@@ -33,8 +33,6 @@
       font-family: "IBM Plex Sans KR", sans-serif;
       color: var(--ink);
       background:
-        linear-gradient(rgba(255,255,255,0.38), rgba(255,255,255,0.62)),
-        url('https://tse1.mm.bing.net/th/id/OIP.PNikbicbEc5cr_LGKGmPvwAAAA?rs=1&pid=ImgDetMain&o=7&rm=3') center/cover fixed no-repeat,
         radial-gradient(circle at 12% 12%, var(--spot-1) 0, transparent 28%),
         radial-gradient(circle at 87% 80%, var(--spot-2) 0, transparent 32%),
         linear-gradient(135deg, var(--bg-1), var(--bg-2));
@@ -56,9 +54,6 @@
       --out-bg: rgba(15, 22, 31, 0.95);
       --line: rgba(234, 242, 248, 0.16);
       --shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
-      background:
-        linear-gradient(rgba(8,12,18,0.7), rgba(8,12,18,0.7)),
-        url('https://tse1.mm.bing.net/th/id/OIP.PNikbicbEc5cr_LGKGmPvwAAAA?rs=1&pid=ImgDetMain&o=7&rm=3') center/cover fixed no-repeat;
     }
 
     .wrap {
@@ -951,11 +946,28 @@
       reader.readAsDataURL(file);
     }
 
-    async function callLookalikeApi(isReroll) {
+    function summarizeTraitsForPrompt(traits) {
+      if (currentLang === 'en') {
+        const tone = traits.warmth > 10 ? 'warm tone' : (traits.warmth < -10 ? 'cool tone' : 'neutral tone');
+        const mood = traits.smile > 0.25 ? 'smiling mood' : (traits.smile < -0.2 ? 'serious mood' : 'calm mood');
+        const eye = traits.eyeDepth > 0.2 ? 'deep expressive eyes' : 'soft open eyes';
+        const contrast = traits.contrast > 45 ? 'high contrast face' : 'soft contrast face';
+        return `${mood}, ${eye}, ${tone}, ${contrast}, cheek glow ${traits.cheekGlow.toFixed(2)}, energy ${traits.energy.toFixed(2)}`;
+      }
+      const tone = traits.warmth > 10 ? '따뜻한 색감' : (traits.warmth < -10 ? '차가운 색감' : '중간 색감');
+      const mood = traits.smile > 0.25 ? '미소 있는 분위기' : (traits.smile < -0.2 ? '진지한 분위기' : '차분한 분위기');
+      const eye = traits.eyeDepth > 0.2 ? '깊고 또렷한 눈매' : '부드럽게 열린 눈매';
+      const contrast = traits.contrast > 45 ? '대비 강함' : '대비 부드러움';
+      return `${mood}, ${eye}, ${tone}, ${contrast}, 볼 생기 ${traits.cheekGlow.toFixed(2)}, 에너지 ${traits.energy.toFixed(2)}`;
+    }
+
+    async function callLookalikeApi(isReroll, animalType, traitsText) {
       const payload = {
         imageDataUrl: uploadedImageDataUrl,
         reroll: Boolean(isReroll),
-        lang: currentLang
+        lang: currentLang,
+        animalType,
+        traitsText
       };
 
       const response = await fetch('/api/lookalike', {
@@ -991,13 +1003,18 @@
       }
       setOutput('charOut', t.msg.generating, false);
       try {
-        const result = await callLookalikeApi(false);
+        const traits = analyzeTraits(uploadedImage);
+        const type = pickCharacterType(traits);
+        const animalType = I18N[currentLang].typeNames[type] || type;
+        const traitsText = summarizeTraitsForPrompt(traits);
+        const result = await callLookalikeApi(false, animalType, traitsText);
         if (!result || !result.imageDataUrl) {
           throw new Error('No image result');
         }
         await renderGeneratedImageToCanvas(result.imageDataUrl);
         characterReady = true;
         lastGeneratedDataUrl = result.imageDataUrl;
+        lastType = type;
         setOutput('charOut', t.msg.charDone(result.analysisText || ''), false);
       } catch (err) {
         characterReady = false;
@@ -1013,13 +1030,18 @@
       }
       setOutput('charOut', t.msg.generating, false);
       try {
-        const result = await callLookalikeApi(true);
+        const traits = analyzeTraits(uploadedImage);
+        const type = pickCharacterType(traits, lastType);
+        const animalType = I18N[currentLang].typeNames[type] || type;
+        const traitsText = summarizeTraitsForPrompt(traits);
+        const result = await callLookalikeApi(true, animalType, traitsText);
         if (!result || !result.imageDataUrl) {
           throw new Error('No image result');
         }
         await renderGeneratedImageToCanvas(result.imageDataUrl);
         characterReady = true;
         lastGeneratedDataUrl = result.imageDataUrl;
+        lastType = type;
         setOutput('charOut', t.msg.rerolled(result.analysisText || ''), false);
       } catch (err) {
         characterReady = false;
