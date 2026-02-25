@@ -306,8 +306,10 @@
   <script>
     let currentLang = 'ko';
     let uploadedImage = null;
+    let uploadedImageDataUrl = '';
     let characterReady = false;
     let lastType = '';
+    let lastGeneratedDataUrl = '';
 
     const CHARACTER_TYPES = ['cat', 'fox', 'bear', 'panda', 'rabbit'];
 
@@ -356,8 +358,10 @@
           photoFirst: '먼저 사진을 업로드하세요.',
           photoLoaded: '사진이 로드되었습니다. 닮은꼴 만들기를 눌러주세요.',
           photoError: '이미지를 읽지 못했습니다. 다른 파일로 시도하세요.',
-          charDone: (name) => `추천 결과: ${name} 캐릭터에 표정/특징 반영이 완료되었습니다.`,
-          rerolled: (name) => `다른 추천 적용: ${name} 캐릭터로 다시 표현했습니다.`
+          generating: 'AI가 얼굴 분석과 이미지 생성을 진행 중입니다. 잠시만 기다려주세요...',
+          apiError: 'AI 생성에 실패했습니다. 서버 실행/API 키/요청 제한을 확인하세요.',
+          charDone: (detail) => `생성이 완료되었습니다.${detail ? `\n${detail}` : ''}`,
+          rerolled: (detail) => `다른 버전 생성이 완료되었습니다.${detail ? `\n${detail}` : ''}`
         },
         summaryKeywords: ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략']
       },
@@ -405,8 +409,10 @@
           photoFirst: 'Please upload a photo first.',
           photoLoaded: 'Photo loaded. Click create look-alike.',
           photoError: 'Could not read this image. Try another file.',
-          charDone: (name) => `Recommendation: ${name}. Expression-based character rendering is complete.`,
-          rerolled: (name) => `Another recommendation applied: ${name} style has been rendered.`
+          generating: 'AI is analyzing face traits and generating an image. Please wait...',
+          apiError: 'AI generation failed. Check server status/API key/rate limits.',
+          charDone: (detail) => `Generation complete.${detail ? `\n${detail}` : ''}`,
+          rerolled: (detail) => `Another variation is complete.${detail ? `\n${detail}` : ''}`
         },
         summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'efficient', 'result', 'strategy']
       }
@@ -902,7 +908,9 @@
       const file = event.target.files[0];
       if (!file) {
         uploadedImage = null;
+        uploadedImageDataUrl = '';
         characterReady = false;
+        lastGeneratedDataUrl = '';
         setOutput('charOut', t.defaults.charOut, true);
         renderCanvasPlaceholder();
         return;
@@ -913,7 +921,9 @@
         const img = new Image();
         img.onload = () => {
           uploadedImage = img;
+          uploadedImageDataUrl = String(reader.result || '');
           characterReady = false;
+          lastGeneratedDataUrl = '';
           setOutput('charOut', t.msg.photoLoaded, false);
           const c = document.getElementById('charCanvas');
           const ctx = c.getContext('2d');
@@ -922,7 +932,9 @@
         };
         img.onerror = () => {
           uploadedImage = null;
+          uploadedImageDataUrl = '';
           characterReady = false;
+          lastGeneratedDataUrl = '';
           setOutput('charOut', t.msg.photoError, false);
           renderCanvasPlaceholder();
         };
@@ -930,35 +942,89 @@
       };
       reader.onerror = () => {
         uploadedImage = null;
+        uploadedImageDataUrl = '';
         characterReady = false;
+        lastGeneratedDataUrl = '';
         setOutput('charOut', t.msg.photoError, false);
         renderCanvasPlaceholder();
       };
       reader.readAsDataURL(file);
     }
 
-    function generateCharacter() {
-      const t = I18N[currentLang];
-      if (!uploadedImage) {
-        setOutput('charOut', t.msg.photoFirst, false);
-        return;
-      }
+    async function callLookalikeApi(isReroll) {
+      const payload = {
+        imageDataUrl: uploadedImageDataUrl,
+        reroll: Boolean(isReroll),
+        lang: currentLang
+      };
 
-      const traits = analyzeTraits(uploadedImage);
-      const type = pickCharacterType(traits);
-      renderCharacter(type, traits, t.msg.charDone);
+      const response = await fetch('/api/lookalike', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || `HTTP ${response.status}`);
+      }
+      return response.json();
     }
 
-    function rerollCharacter() {
+    async function renderGeneratedImageToCanvas(dataUrl) {
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = dataUrl;
+      });
+      const c = document.getElementById('charCanvas');
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, c.width, c.height);
+      drawImageCover(ctx, img, c.width);
+    }
+
+    async function generateCharacter() {
       const t = I18N[currentLang];
-      if (!uploadedImage) {
+      if (!uploadedImage || !uploadedImageDataUrl) {
         setOutput('charOut', t.msg.photoFirst, false);
         return;
       }
+      setOutput('charOut', t.msg.generating, false);
+      try {
+        const result = await callLookalikeApi(false);
+        if (!result || !result.imageDataUrl) {
+          throw new Error('No image result');
+        }
+        await renderGeneratedImageToCanvas(result.imageDataUrl);
+        characterReady = true;
+        lastGeneratedDataUrl = result.imageDataUrl;
+        setOutput('charOut', t.msg.charDone(result.analysisText || ''), false);
+      } catch (err) {
+        characterReady = false;
+        setOutput('charOut', `${t.msg.apiError}\n${String(err.message || err)}`, false);
+      }
+    }
 
-      const traits = analyzeTraits(uploadedImage);
-      const type = pickCharacterType(traits, lastType);
-      renderCharacter(type, traits, t.msg.rerolled);
+    async function rerollCharacter() {
+      const t = I18N[currentLang];
+      if (!uploadedImage || !uploadedImageDataUrl) {
+        setOutput('charOut', t.msg.photoFirst, false);
+        return;
+      }
+      setOutput('charOut', t.msg.generating, false);
+      try {
+        const result = await callLookalikeApi(true);
+        if (!result || !result.imageDataUrl) {
+          throw new Error('No image result');
+        }
+        await renderGeneratedImageToCanvas(result.imageDataUrl);
+        characterReady = true;
+        lastGeneratedDataUrl = result.imageDataUrl;
+        setOutput('charOut', t.msg.rerolled(result.analysisText || ''), false);
+      } catch (err) {
+        characterReady = false;
+        setOutput('charOut', `${t.msg.apiError}\n${String(err.message || err)}`, false);
+      }
     }
 
     function downloadCharacter() {
@@ -967,10 +1033,14 @@
         setOutput('charOut', t.msg.photoFirst, false);
         return;
       }
-      const c = document.getElementById('charCanvas');
       const link = document.createElement('a');
-      link.download = 'lookalike-character.png';
-      link.href = c.toDataURL('image/png');
+      link.download = 'lookalike-anime.png';
+      if (lastGeneratedDataUrl) {
+        link.href = lastGeneratedDataUrl;
+      } else {
+        const c = document.getElementById('charCanvas');
+        link.href = c.toDataURL('image/png');
+      }
       link.click();
     }
 
