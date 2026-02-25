@@ -315,8 +315,8 @@
         langToggle: 'English',
         themeLight: '화이트모드',
         themeDark: '블랙모드',
-        charTitle: '1) 닮은꼴 합성 생성기',
-        charDesc: '사진을 분석해 "이 사람은 이거 닮았네" 타입을 추천하고, 해당 캐릭터에 얼굴을 합성합니다.',
+        charTitle: '1) 닮은꼴 애니 캐릭터 생성기',
+        charDesc: '사진에서 표정/색감/분위기를 읽어 닮은 동물 타입의 애니메이션풍 얼굴 특징으로 표현합니다.',
         charBtn: '닮은꼴 만들기',
         charRerollBtn: '다른 추천',
         charDownloadBtn: '이미지 저장',
@@ -364,8 +364,8 @@
         langToggle: '한국어',
         themeLight: 'Light Mode',
         themeDark: 'Dark Mode',
-        charTitle: '1) Look-Alike Composer',
-        charDesc: 'Analyzes your photo, picks a look-alike type, then composites your face into that character.',
+        charTitle: '1) Look-Alike Anime Character',
+        charDesc: 'Reads expression, color mood, and vibe from your photo, then renders them in an anime-style animal character.',
         charBtn: 'Create Look-Alike',
         charRerollBtn: 'Another Pick',
         charDownloadBtn: 'Save Image',
@@ -508,27 +508,86 @@
       ctx.fillText(t.charBtn, c.width / 2, c.height / 2);
     }
 
+    function clamp(v, min, max) {
+      return Math.min(max, Math.max(min, v));
+    }
+
+    function mapRange(value, inMin, inMax, outMin, outMax) {
+      const t = (value - inMin) / (inMax - inMin || 1);
+      return outMin + (outMax - outMin) * clamp(t, 0, 1);
+    }
+
     function analyzeTraits(img) {
       const off = document.createElement('canvas');
-      off.width = 64;
-      off.height = 64;
+      off.width = 96;
+      off.height = 96;
       const ctx = off.getContext('2d');
-      drawImageCover(ctx, img, 64);
-      const d = ctx.getImageData(0, 0, 64, 64).data;
+      drawImageCover(ctx, img, 96);
+      const d = ctx.getImageData(0, 0, 96, 96).data;
 
       let r = 0, g = 0, b = 0;
-      for (let i = 0; i < d.length; i += 4) {
-        r += d[i];
-        g += d[i + 1];
-        b += d[i + 2];
+      let meanLuma = 0;
+      let lumaSq = 0;
+      let topDark = 0;
+      let centerBright = 0;
+      let lowerCenterBright = 0;
+      let lowerSideBright = 0;
+
+      for (let y = 0; y < 96; y++) {
+        for (let x = 0; x < 96; x++) {
+          const p = (y * 96 + x) * 4;
+          const rr = d[p];
+          const gg = d[p + 1];
+          const bb = d[p + 2];
+          const luma = rr * 0.299 + gg * 0.587 + bb * 0.114;
+
+          r += rr;
+          g += gg;
+          b += bb;
+          meanLuma += luma;
+          lumaSq += luma * luma;
+
+          if (y < 28 && x > 18 && x < 78) {
+            topDark += 255 - luma;
+          }
+          if (y > 30 && y < 62 && x > 22 && x < 74) {
+            centerBright += luma;
+          }
+          if (y > 60 && y < 84 && x > 34 && x < 62) {
+            lowerCenterBright += luma;
+          }
+          if (y > 60 && y < 84 && ((x > 12 && x < 30) || (x > 66 && x < 84))) {
+            lowerSideBright += luma;
+          }
+        }
       }
-      const n = d.length / 4;
+
+      const n = 96 * 96;
       r /= n;
       g /= n;
       b /= n;
-      const brightness = (r + g + b) / 3;
+      meanLuma /= n;
+      const variance = Math.max(0, lumaSq / n - meanLuma * meanLuma);
+      const contrast = Math.sqrt(variance);
       const sat = Math.max(r, g, b) - Math.min(r, g, b);
-      return { r, g, b, brightness, sat };
+
+      const warmth = r - b;
+      const smileHint = (lowerCenterBright / 672) - (lowerSideBright / 864);
+      const eyeDepth = topDark / (28 * 60);
+      const cheekHint = centerBright / (32 * 52);
+
+      return {
+        r, g, b,
+        brightness: meanLuma,
+        sat,
+        contrast,
+        warmth,
+        smile: mapRange(smileHint, -12, 18, -1, 1),
+        eyeDepth: mapRange(eyeDepth, 95, 175, -1, 1),
+        serious: mapRange(contrast, 28, 62, -1, 1),
+        energy: mapRange(sat + contrast * 0.8, 60, 190, 0, 1),
+        cheekGlow: mapRange(cheekHint, 95, 180, 0, 1)
+      };
     }
 
     function pickCharacterType(traits, excludeType = '') {
@@ -635,39 +694,117 @@
       }
     }
 
-    function drawFaceCutout(ctx, img, size) {
-      const faceX = size * 0.5;
-      const faceY = size * 0.44;
-      const faceR = size * 0.18;
+    function drawAnimeFace(ctx, type, size, traits) {
+      const cx = size * 0.5;
+      const cy = size * 0.45;
+      const faceW = size * 0.42;
+      const faceH = size * 0.35;
 
-      ctx.save();
+      const baseR = clamp(Math.round(traits.r * 0.9 + 45), 90, 245);
+      const baseG = clamp(Math.round(traits.g * 0.9 + 35), 80, 230);
+      const baseB = clamp(Math.round(traits.b * 0.9 + 25), 70, 220);
+      const faceColor = `rgb(${baseR}, ${baseG}, ${baseB})`;
+
+      const faceGrad = ctx.createRadialGradient(cx - 18, cy - 30, 20, cx, cy, faceW * 0.66);
+      faceGrad.addColorStop(0, `rgba(${clamp(baseR + 25, 0, 255)},${clamp(baseG + 20, 0, 255)},${clamp(baseB + 20, 0, 255)},1)`);
+      faceGrad.addColorStop(1, faceColor);
+      ctx.fillStyle = faceGrad;
+
+      if (type === 'robot') {
+        ctx.fillRect(cx - faceW * 0.52, cy - faceH * 0.54, faceW * 1.04, faceH * 1.02);
+      } else {
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, faceW * 0.5, faceH * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = `rgba(255,120,140,${0.1 + traits.cheekGlow * 0.18})`;
       ctx.beginPath();
-      ctx.arc(faceX, faceY, faceR, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
+      ctx.ellipse(cx - faceW * 0.26, cy + faceH * 0.1, faceW * 0.11, faceH * 0.08, -0.2, 0, Math.PI * 2);
+      ctx.ellipse(cx + faceW * 0.26, cy + faceH * 0.1, faceW * 0.11, faceH * 0.08, 0.2, 0, Math.PI * 2);
+      ctx.fill();
 
-      const srcW = img.width * 0.52;
-      const srcH = img.height * 0.52;
-      const srcX = (img.width - srcW) / 2;
-      const srcY = img.height * 0.12;
-      ctx.drawImage(img, srcX, srcY, srcW, srcH, faceX - faceR, faceY - faceR, faceR * 2, faceR * 2);
-      ctx.restore();
+      const eyeY = cy - faceH * 0.03;
+      const eyeGap = faceW * 0.22;
+      const eyeOpen = mapRange(traits.eyeDepth, -1, 1, 0.8, 1.25);
+      const irisHue = clamp(Math.round(mapRange(traits.warmth, -80, 80, 190, 20)), 0, 220);
+      const browTilt = mapRange(traits.serious, -1, 1, -0.28, 0.26);
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-      ctx.lineWidth = 5;
+      function drawEye(ex) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY, faceW * 0.09, faceH * 0.07 * eyeOpen, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        const iris = ctx.createRadialGradient(ex - 3, eyeY - 2, 2, ex, eyeY, faceW * 0.05);
+        iris.addColorStop(0, `hsl(${irisHue}, 82%, 66%)`);
+        iris.addColorStop(1, `hsl(${irisHue}, 66%, 34%)`);
+        ctx.fillStyle = iris;
+        ctx.beginPath();
+        ctx.arc(ex, eyeY, faceW * 0.045, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#101010';
+        ctx.beginPath();
+        ctx.arc(ex, eyeY, faceW * 0.02, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.beginPath();
+        ctx.arc(ex - 3, eyeY - 4, faceW * 0.012, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawEye(cx - eyeGap);
+      drawEye(cx + eyeGap);
+
+      ctx.strokeStyle = '#342924';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.arc(faceX, faceY, faceR, 0, Math.PI * 2);
+      ctx.moveTo(cx - eyeGap - faceW * 0.08, eyeY - faceH * 0.16 - browTilt * 10);
+      ctx.quadraticCurveTo(cx - eyeGap, eyeY - faceH * 0.22 - browTilt * 12, cx - eyeGap + faceW * 0.08, eyeY - faceH * 0.14 + browTilt * 8);
+      ctx.moveTo(cx + eyeGap - faceW * 0.08, eyeY - faceH * 0.14 + browTilt * 8);
+      ctx.quadraticCurveTo(cx + eyeGap, eyeY - faceH * 0.22 - browTilt * 12, cx + eyeGap + faceW * 0.08, eyeY - faceH * 0.16 - browTilt * 10);
       ctx.stroke();
+
+      const mouthY = cy + faceH * 0.2;
+      const smileCurve = mapRange(traits.smile, -1, 1, -14, 18);
+      ctx.strokeStyle = '#5a342f';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(cx - faceW * 0.13, mouthY);
+      ctx.quadraticCurveTo(cx, mouthY + smileCurve, cx + faceW * 0.13, mouthY);
+      ctx.stroke();
+
+      if (type !== 'robot') {
+        ctx.fillStyle = '#2b241f';
+        if (type === 'fox') {
+          ctx.beginPath();
+          ctx.moveTo(cx, cy + faceH * 0.02);
+          ctx.lineTo(cx - 7, cy + faceH * 0.08);
+          ctx.lineTo(cx + 7, cy + faceH * 0.08);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.ellipse(cx, cy + faceH * 0.05, 8, 6, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else {
+        ctx.fillStyle = '#243448';
+        ctx.fillRect(cx - 10, cy + faceH * 0.02, 20, 8);
+      }
     }
 
-    function renderCharacter(type, statusBuilder) {
+    function renderCharacter(type, traits, statusBuilder) {
       const t = I18N[currentLang];
       const c = document.getElementById('charCanvas');
       const ctx = c.getContext('2d');
       const size = c.width;
 
       drawTemplate(ctx, type, size);
-      drawFaceCutout(ctx, uploadedImage, size);
+      drawAnimeFace(ctx, type, size, traits);
 
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fillRect(10, size - 44, size - 20, 30);
@@ -731,7 +868,7 @@
 
       const traits = analyzeTraits(uploadedImage);
       const type = pickCharacterType(traits);
-      renderCharacter(type, t.msg.charDone);
+      renderCharacter(type, traits, t.msg.charDone);
     }
 
     function rerollCharacter() {
@@ -743,7 +880,7 @@
 
       const traits = analyzeTraits(uploadedImage);
       const type = pickCharacterType(traits, lastType);
-      renderCharacter(type, t.msg.rerolled);
+      renderCharacter(type, traits, t.msg.rerolled);
     }
 
     function downloadCharacter() {
