@@ -304,19 +304,19 @@
     let characterReady = false;
     let lastType = '';
 
-    const CHARACTER_TYPES = ['cat', 'fox', 'bear', 'panda', 'robot'];
+    const CHARACTER_TYPES = ['cat', 'fox', 'bear', 'panda', 'rabbit'];
 
     const I18N = {
       ko: {
         htmlLang: 'ko',
         title: 'AI + 실용 툴 스튜디오',
         heroTitle: 'AI + 실용 툴 스튜디오',
-        heroDesc: '사진을 보고 닮은 동물/물체 스타일로 얼굴을 합성하는 기능을 포함합니다.',
+        heroDesc: '사진의 표정과 얼굴 특징을 읽어 애니메이션풍 닮은 동물 캐릭터로 정교하게 표현합니다.',
         langToggle: 'English',
         themeLight: '화이트모드',
         themeDark: '블랙모드',
         charTitle: '1) 닮은꼴 애니 캐릭터 생성기',
-        charDesc: '사진에서 표정/색감/분위기를 읽어 닮은 동물 타입의 애니메이션풍 얼굴 특징으로 표현합니다.',
+        charDesc: '사진에서 표정, 눈매, 분위기를 분석해 닮은 동물 캐릭터에 세밀하게 반영합니다.',
         charBtn: '닮은꼴 만들기',
         charRerollBtn: '다른 추천',
         charDownloadBtn: '이미지 저장',
@@ -338,7 +338,7 @@
         pwAll: '영문+숫자+특수문자',
         pwAlnum: '영문+숫자',
         pwLetters: '영문만',
-        typeNames: { cat: '고양이', fox: '여우', bear: '곰', panda: '판다', robot: '로봇' },
+        typeNames: { cat: '고양이', fox: '여우', bear: '곰', panda: '판다', rabbit: '토끼' },
         defaults: {
           charOut: '사진을 올린 뒤 닮은꼴 만들기를 눌러주세요.',
           sumOut: '결과가 여기에 표시됩니다.',
@@ -351,8 +351,8 @@
           photoFirst: '먼저 사진을 업로드하세요.',
           photoLoaded: '사진이 로드되었습니다. 닮은꼴 만들기를 눌러주세요.',
           photoError: '이미지를 읽지 못했습니다. 다른 파일로 시도하세요.',
-          charDone: (name) => `추천 결과: ${name} 닮은꼴로 얼굴 합성이 완료되었습니다.`,
-          rerolled: (name) => `다른 추천 적용: ${name} 닮은꼴로 다시 만들었습니다.`
+          charDone: (name) => `추천 결과: ${name} 캐릭터에 표정/특징 반영이 완료되었습니다.`,
+          rerolled: (name) => `다른 추천 적용: ${name} 캐릭터로 다시 표현했습니다.`
         },
         summaryKeywords: ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략']
       },
@@ -360,12 +360,12 @@
         htmlLang: 'en',
         title: 'AI + Practical Tools Studio',
         heroTitle: 'AI + Practical Tools Studio',
-        heroDesc: 'Includes a look-alike compositor that places your face on a recommended animal/object style.',
+        heroDesc: 'Reads facial expression and key traits, then renders a detailed anime-style look-alike animal character.',
         langToggle: '한국어',
         themeLight: 'Light Mode',
         themeDark: 'Dark Mode',
         charTitle: '1) Look-Alike Anime Character',
-        charDesc: 'Reads expression, color mood, and vibe from your photo, then renders them in an anime-style animal character.',
+        charDesc: 'Analyzes expression, eye mood, and facial cues from your photo, then maps them to an anime animal character.',
         charBtn: 'Create Look-Alike',
         charRerollBtn: 'Another Pick',
         charDownloadBtn: 'Save Image',
@@ -387,7 +387,7 @@
         pwAll: 'Letters + Numbers + Symbols',
         pwAlnum: 'Letters + Numbers',
         pwLetters: 'Letters only',
-        typeNames: { cat: 'Cat', fox: 'Fox', bear: 'Bear', panda: 'Panda', robot: 'Robot' },
+        typeNames: { cat: 'Cat', fox: 'Fox', bear: 'Bear', panda: 'Panda', rabbit: 'Rabbit' },
         defaults: {
           charOut: 'Upload a photo, then click create look-alike.',
           sumOut: 'Results will appear here.',
@@ -400,8 +400,8 @@
           photoFirst: 'Please upload a photo first.',
           photoLoaded: 'Photo loaded. Click create look-alike.',
           photoError: 'Could not read this image. Try another file.',
-          charDone: (name) => `Recommendation: ${name}. Face compositing is complete.`,
-          rerolled: (name) => `Another recommendation applied: ${name}.`
+          charDone: (name) => `Recommendation: ${name}. Expression-based character rendering is complete.`,
+          rerolled: (name) => `Another recommendation applied: ${name} style has been rendered.`
         },
         summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'efficient', 'result', 'strategy']
       }
@@ -519,50 +519,50 @@
 
     function analyzeTraits(img) {
       const off = document.createElement('canvas');
-      off.width = 96;
-      off.height = 96;
+      off.width = 112;
+      off.height = 112;
       const ctx = off.getContext('2d');
-      drawImageCover(ctx, img, 96);
-      const d = ctx.getImageData(0, 0, 96, 96).data;
+      drawImageCover(ctx, img, 112);
+      const d = ctx.getImageData(0, 0, 112, 112).data;
 
       let r = 0, g = 0, b = 0;
       let meanLuma = 0;
       let lumaSq = 0;
-      let topDark = 0;
-      let centerBright = 0;
-      let lowerCenterBright = 0;
-      let lowerSideBright = 0;
+      let upperDark = 0;
+      let midBright = 0;
+      let mouthMid = 0;
+      let mouthSide = 0;
+      let leftTone = 0;
+      let rightTone = 0;
+      let lowerDark = 0;
+      let highSatCount = 0;
 
-      for (let y = 0; y < 96; y++) {
-        for (let x = 0; x < 96; x++) {
-          const p = (y * 96 + x) * 4;
+      for (let y = 0; y < 112; y++) {
+        for (let x = 0; x < 112; x++) {
+          const p = (y * 112 + x) * 4;
           const rr = d[p];
           const gg = d[p + 1];
           const bb = d[p + 2];
           const luma = rr * 0.299 + gg * 0.587 + bb * 0.114;
+          const sat = Math.max(rr, gg, bb) - Math.min(rr, gg, bb);
 
           r += rr;
           g += gg;
           b += bb;
           meanLuma += luma;
           lumaSq += luma * luma;
+          if (sat > 70) highSatCount++;
 
-          if (y < 28 && x > 18 && x < 78) {
-            topDark += 255 - luma;
-          }
-          if (y > 30 && y < 62 && x > 22 && x < 74) {
-            centerBright += luma;
-          }
-          if (y > 60 && y < 84 && x > 34 && x < 62) {
-            lowerCenterBright += luma;
-          }
-          if (y > 60 && y < 84 && ((x > 12 && x < 30) || (x > 66 && x < 84))) {
-            lowerSideBright += luma;
-          }
+          if (y < 36 && x > 20 && x < 92) upperDark += 255 - luma;
+          if (y > 34 && y < 74 && x > 20 && x < 92) midBright += luma;
+          if (y > 70 && y < 94 && x > 40 && x < 72) mouthMid += luma;
+          if (y > 70 && y < 94 && ((x > 20 && x < 38) || (x > 74 && x < 92))) mouthSide += luma;
+          if (x < 56) leftTone += luma; else rightTone += luma;
+          if (y > 82 && x > 26 && x < 86) lowerDark += 255 - luma;
         }
       }
 
-      const n = 96 * 96;
+      const n = 112 * 112;
       r /= n;
       g /= n;
       b /= n;
@@ -572,9 +572,11 @@
       const sat = Math.max(r, g, b) - Math.min(r, g, b);
 
       const warmth = r - b;
-      const smileHint = (lowerCenterBright / 672) - (lowerSideBright / 864);
-      const eyeDepth = topDark / (28 * 60);
-      const cheekHint = centerBright / (32 * 52);
+      const smileHint = mouthMid / (24 * 32) - mouthSide / (24 * 36);
+      const eyeDepth = upperDark / (36 * 72);
+      const cheekHint = midBright / (40 * 72);
+      const asym = (leftTone - rightTone) / (56 * 112);
+      const chinDepth = lowerDark / (30 * 60);
 
       return {
         r, g, b,
@@ -582,21 +584,24 @@
         sat,
         contrast,
         warmth,
-        smile: mapRange(smileHint, -12, 18, -1, 1),
-        eyeDepth: mapRange(eyeDepth, 95, 175, -1, 1),
-        serious: mapRange(contrast, 28, 62, -1, 1),
-        energy: mapRange(sat + contrast * 0.8, 60, 190, 0, 1),
-        cheekGlow: mapRange(cheekHint, 95, 180, 0, 1)
+        smile: mapRange(smileHint, -10, 15, -1, 1),
+        eyeDepth: mapRange(eyeDepth, 85, 185, -1, 1),
+        serious: mapRange(contrast, 22, 68, -1, 1),
+        energy: mapRange(sat + contrast, 50, 220, 0, 1),
+        cheekGlow: mapRange(cheekHint, 88, 185, 0, 1),
+        asymmetry: mapRange(asym, -14, 14, -1, 1),
+        chinStrength: mapRange(chinDepth, 70, 180, 0, 1),
+        vivid: mapRange(highSatCount / n, 0.05, 0.32, 0, 1)
       };
     }
 
     function pickCharacterType(traits, excludeType = '') {
       const scores = {
-        cat: traits.brightness * 0.35 + traits.sat * 0.55 + traits.g * 0.1,
-        fox: traits.r * 0.65 + traits.sat * 0.25 - traits.b * 0.2,
-        bear: (255 - traits.brightness) * 0.8 + traits.r * 0.2,
-        panda: traits.brightness * 0.6 + (255 - traits.sat) * 0.4,
-        robot: traits.b * 0.6 + traits.g * 0.3 + traits.sat * 0.1
+        cat: traits.energy * 0.9 + (1 - Math.abs(traits.serious) * 0.5) + mapRange(traits.warmth, -80, 80, 0.1, 0.45),
+        fox: mapRange(traits.warmth, -90, 90, 0.05, 1.05) + traits.vivid * 0.7 + (1 - traits.chinStrength) * 0.3,
+        bear: mapRange(traits.chinStrength, 0, 1, 0.2, 1.0) + mapRange(traits.serious, -1, 1, 0.0, 0.85),
+        panda: mapRange(255 - traits.brightness, 0, 255, 0, 1) + mapRange(traits.eyeDepth, -1, 1, 0.1, 0.85),
+        rabbit: (1 - traits.serious * 0.5) + mapRange(traits.cheekGlow, 0, 1, 0.2, 0.85) + mapRange(traits.smile, -1, 1, 0, 0.65)
       };
 
       const ordered = Object.entries(scores)
@@ -613,20 +618,20 @@
 
       const bg = ctx.createLinearGradient(0, 0, size, size);
       if (type === 'fox') {
-        bg.addColorStop(0, '#ffe1b8');
-        bg.addColorStop(1, '#ffb86e');
+        bg.addColorStop(0, '#ffd8a5');
+        bg.addColorStop(1, '#ff9f5f');
       } else if (type === 'bear') {
-        bg.addColorStop(0, '#d2b48c');
-        bg.addColorStop(1, '#8f6a4a');
+        bg.addColorStop(0, '#d7b48f');
+        bg.addColorStop(1, '#8a5a3e');
       } else if (type === 'panda') {
-        bg.addColorStop(0, '#f7f7f7');
-        bg.addColorStop(1, '#d8dde2');
-      } else if (type === 'robot') {
-        bg.addColorStop(0, '#b9d9ff');
-        bg.addColorStop(1, '#88a9d2');
+        bg.addColorStop(0, '#fafafa');
+        bg.addColorStop(1, '#ced6de');
+      } else if (type === 'rabbit') {
+        bg.addColorStop(0, '#ffdff0');
+        bg.addColorStop(1, '#ffc4e2');
       } else {
-        bg.addColorStop(0, '#ffd6dc');
-        bg.addColorStop(1, '#ffc2a9');
+        bg.addColorStop(0, '#ffe0e8');
+        bg.addColorStop(1, '#ffc9b3');
       }
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, size, size);
@@ -637,19 +642,12 @@
       ctx.arc(size * 0.84, size * 0.12, size * 0.16, 0, Math.PI * 2);
       ctx.fill();
 
-      const bodyY = size * 0.68;
-      if (type === 'robot') {
-        ctx.fillStyle = '#5a6f8c';
-        ctx.fillRect(size * 0.28, bodyY - 20, size * 0.44, size * 0.28);
-        ctx.fillStyle = '#9ec1ea';
-        ctx.fillRect(size * 0.33, bodyY - 4, size * 0.34, size * 0.1);
-      } else {
-        const bodyColor = type === 'bear' ? '#6f4b35' : type === 'fox' ? '#d06f2f' : type === 'panda' ? '#212121' : '#cb8a8a';
-        ctx.fillStyle = bodyColor;
-        ctx.beginPath();
-        ctx.ellipse(size * 0.5, bodyY + 24, size * 0.21, size * 0.18, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      const bodyY = size * 0.7;
+      const bodyColor = type === 'bear' ? '#6f4b35' : type === 'fox' ? '#cc6a2a' : type === 'panda' ? '#1f1f1f' : type === 'rabbit' ? '#dda9c7' : '#d28c96';
+      ctx.fillStyle = bodyColor;
+      ctx.beginPath();
+      ctx.ellipse(size * 0.5, bodyY + 20, size * 0.22, size * 0.17, 0, 0, Math.PI * 2);
+      ctx.fill();
 
       if (type === 'cat') {
         ctx.fillStyle = '#c9847c';
@@ -688,17 +686,20 @@
         ctx.fill();
       }
 
-      if (type === 'robot') {
-        ctx.fillStyle = '#4f6078';
-        ctx.fillRect(size * 0.24, size * 0.18, size * 0.52, size * 0.08);
+      if (type === 'rabbit') {
+        ctx.fillStyle = '#efbfd8';
+        ctx.beginPath();
+        ctx.ellipse(size * 0.36, size * 0.14, size * 0.05, size * 0.15, -0.08, 0, Math.PI * 2);
+        ctx.ellipse(size * 0.64, size * 0.14, size * 0.05, size * 0.15, 0.08, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
 
     function drawAnimeFace(ctx, type, size, traits) {
       const cx = size * 0.5;
       const cy = size * 0.45;
-      const faceW = size * 0.42;
-      const faceH = size * 0.35;
+      const faceW = size * mapRange(traits.chinStrength, 0, 1, 0.38, 0.47);
+      const faceH = size * mapRange(traits.cheekGlow, 0, 1, 0.33, 0.39);
 
       const baseR = clamp(Math.round(traits.r * 0.9 + 45), 90, 245);
       const baseG = clamp(Math.round(traits.g * 0.9 + 35), 80, 230);
@@ -710,11 +711,15 @@
       faceGrad.addColorStop(1, faceColor);
       ctx.fillStyle = faceGrad;
 
-      if (type === 'robot') {
-        ctx.fillRect(cx - faceW * 0.52, cy - faceH * 0.54, faceW * 1.04, faceH * 1.02);
-      } else {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, faceW * 0.5, faceH * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (type === 'panda') {
+        ctx.fillStyle = 'rgba(20,20,20,0.9)';
         ctx.beginPath();
-        ctx.ellipse(cx, cy, faceW * 0.5, faceH * 0.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx - faceW * 0.2, cy - faceH * 0.03, faceW * 0.12, faceH * 0.11, -0.28, 0, Math.PI * 2);
+        ctx.ellipse(cx + faceW * 0.2, cy - faceH * 0.03, faceW * 0.12, faceH * 0.11, 0.28, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -726,14 +731,16 @@
 
       const eyeY = cy - faceH * 0.03;
       const eyeGap = faceW * 0.22;
-      const eyeOpen = mapRange(traits.eyeDepth, -1, 1, 0.8, 1.25);
+      const eyeOpen = mapRange(traits.eyeDepth, -1, 1, 0.78, 1.3);
       const irisHue = clamp(Math.round(mapRange(traits.warmth, -80, 80, 190, 20)), 0, 220);
-      const browTilt = mapRange(traits.serious, -1, 1, -0.28, 0.26);
+      const browTilt = mapRange(traits.serious, -1, 1, -0.32, 0.28);
+      const eyeSlant = mapRange(traits.asymmetry, -1, 1, -0.22, 0.22);
+      const pupilSize = mapRange(traits.energy, 0, 1, 0.017, 0.026) * faceW;
 
       function drawEye(ex) {
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.ellipse(ex, eyeY, faceW * 0.09, faceH * 0.07 * eyeOpen, 0, 0, Math.PI * 2);
+        ctx.ellipse(ex, eyeY, faceW * 0.1, faceH * 0.073 * eyeOpen, eyeSlant * (ex < cx ? -1 : 1), 0, Math.PI * 2);
         ctx.fill();
 
         const iris = ctx.createRadialGradient(ex - 3, eyeY - 2, 2, ex, eyeY, faceW * 0.05);
@@ -746,7 +753,7 @@
 
         ctx.fillStyle = '#101010';
         ctx.beginPath();
-        ctx.arc(ex, eyeY, faceW * 0.02, 0, Math.PI * 2);
+        ctx.arc(ex, eyeY, pupilSize, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = 'rgba(255,255,255,0.9)';
@@ -769,7 +776,7 @@
       ctx.stroke();
 
       const mouthY = cy + faceH * 0.2;
-      const smileCurve = mapRange(traits.smile, -1, 1, -14, 18);
+      const smileCurve = mapRange(traits.smile, -1, 1, -16, 22);
       ctx.strokeStyle = '#5a342f';
       ctx.lineWidth = 4;
       ctx.beginPath();
@@ -777,23 +784,45 @@
       ctx.quadraticCurveTo(cx, mouthY + smileCurve, cx + faceW * 0.13, mouthY);
       ctx.stroke();
 
-      if (type !== 'robot') {
-        ctx.fillStyle = '#2b241f';
-        if (type === 'fox') {
-          ctx.beginPath();
-          ctx.moveTo(cx, cy + faceH * 0.02);
-          ctx.lineTo(cx - 7, cy + faceH * 0.08);
-          ctx.lineTo(cx + 7, cy + faceH * 0.08);
-          ctx.closePath();
-          ctx.fill();
-        } else {
-          ctx.beginPath();
-          ctx.ellipse(cx, cy + faceH * 0.05, 8, 6, 0, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      ctx.fillStyle = '#2b241f';
+      if (type === 'fox') {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + faceH * 0.02);
+        ctx.lineTo(cx - 8, cy + faceH * 0.09);
+        ctx.lineTo(cx + 8, cy + faceH * 0.09);
+        ctx.closePath();
+        ctx.fill();
+      } else if (type === 'rabbit') {
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + faceH * 0.04, 7, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - 4, cy + faceH * 0.09);
+        ctx.lineTo(cx - 2, cy + faceH * 0.13);
+        ctx.moveTo(cx + 4, cy + faceH * 0.09);
+        ctx.lineTo(cx + 2, cy + faceH * 0.13);
+        ctx.stroke();
       } else {
-        ctx.fillStyle = '#243448';
-        ctx.fillRect(cx - 10, cy + faceH * 0.02, 20, 8);
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + faceH * 0.05, 8, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (type === 'cat' || type === 'fox') {
+        ctx.strokeStyle = 'rgba(55,40,36,0.85)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - 16, cy + faceH * 0.07);
+        ctx.lineTo(cx - 44, cy + faceH * 0.03);
+        ctx.moveTo(cx - 16, cy + faceH * 0.1);
+        ctx.lineTo(cx - 44, cy + faceH * 0.11);
+        ctx.moveTo(cx + 16, cy + faceH * 0.07);
+        ctx.lineTo(cx + 44, cy + faceH * 0.03);
+        ctx.moveTo(cx + 16, cy + faceH * 0.1);
+        ctx.lineTo(cx + 44, cy + faceH * 0.11);
+        ctx.stroke();
       }
     }
 
