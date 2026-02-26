@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 
-# Replace with your production domain if needed
 Sitemap: https://dnbeol08.github.io/webproject-1/sitemap.xml
 
 # LLM guidance

@@ -1,4 +1,4 @@
-﻿# NCAI Tool
+# NCAI Tool
 
 This site provides practical AI tools and educational guides in Korean and English.
 
