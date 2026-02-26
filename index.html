@@ -3,261 +3,384 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI + 실용 툴 스튜디오: 요약, 단위 변환, 비밀번호 생성과 함께 실제 업무/학습에 바로 쓰는 가이드와 FAQ를 제공합니다." />
+  <meta name="author" content="AI + Practical Tools Studio" />
   <meta name="google-adsense-account" content="ca-pub-2394434951537566" />
   <title>AI + Practical Tools Studio</title>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2394434951537566"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2394434951537566" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-1: #f7f4ec;
-      --bg-2: #e2efdc;
-      --spot-1: #ffd9b8;
-      --spot-2: #cce8bc;
-      --ink: #1c2a20;
-      --primary: #1e7a52;
-      --primary-hover: #146741;
-      --primary-2: #f08534;
-      --card: rgba(255, 255, 255, 0.8);
-      --hero-bg: rgba(255, 255, 255, 0.72);
-      --input-bg: #ffffff;
-      --out-bg: rgba(255, 255, 255, 0.95);
-      --line: rgba(28, 42, 32, 0.12);
-      --shadow: 0 14px 32px rgba(20, 38, 28, 0.12);
+      --bg: #f6f7fb;
+      --bg-soft: #eef2f7;
+      --ink: #16202a;
+      --muted: #5b6775;
+      --line: #d6dde7;
+      --card: #ffffff;
+      --primary: #1666d9;
+      --primary-strong: #0f4fb0;
+      --accent: #f59a23;
+      --shadow: 0 10px 26px rgba(17, 35, 58, 0.08);
+    }
+
+    body.dark-mode {
+      --bg: #0f141b;
+      --bg-soft: #121b24;
+      --ink: #e6edf6;
+      --muted: #9fb0c5;
+      --line: #273241;
+      --card: #171f2a;
+      --primary: #5fa2ff;
+      --primary-strong: #3f85e2;
+      --accent: #ffb34f;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      min-height: 100vh;
       font-family: "IBM Plex Sans KR", sans-serif;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 12% 12%, var(--spot-1) 0, transparent 28%),
-        radial-gradient(circle at 87% 80%, var(--spot-2) 0, transparent 32%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
-      transition: background 240ms ease, color 240ms ease;
+      background: linear-gradient(160deg, var(--bg), var(--bg-soft));
+      transition: background 180ms ease, color 180ms ease;
     }
 
-    body.dark-mode {
-      --bg-1: #101417;
-      --bg-2: #1a232c;
-      --spot-1: #253246;
-      --spot-2: #203a31;
-      --ink: #eaf2f8;
-      --primary: #3f9bff;
-      --primary-hover: #2e85e5;
-      --primary-2: #ef9d57;
-      --card: rgba(22, 30, 40, 0.84);
-      --hero-bg: rgba(20, 28, 38, 0.82);
-      --input-bg: #111922;
-      --out-bg: rgba(15, 22, 31, 0.95);
-      --line: rgba(234, 242, 248, 0.16);
-      --shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
-    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    .wrap {
+    .container {
       width: min(1120px, 92%);
-      margin: 40px auto 60px;
+      margin: 0 auto;
     }
 
-    .hero {
-      background: var(--hero-bg);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 26px;
-      box-shadow: var(--shadow);
+    .topbar {
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 92%, transparent);
       backdrop-filter: blur(6px);
-      animation: rise 650ms ease;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .hero-top {
+    .topbar-inner {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+    }
+
+    .brand {
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .nav {
+      display: flex;
       gap: 14px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
-    .hero-copy { flex: 1 1 520px; }
-
-    .hero h1 {
-      margin: 0 0 10px;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      letter-spacing: -0.02em;
-    }
-
-    .hero p {
-      margin: 0;
-      line-height: 1.55;
-      max-width: 70ch;
+    .nav a {
+      color: var(--ink);
+      font-size: 0.95rem;
       opacity: 0.92;
     }
 
-    .hero-actions {
+    .actions {
       display: flex;
       gap: 8px;
-      align-items: center;
       flex-wrap: wrap;
     }
 
-    .theme-toggle, .lang-toggle {
-      min-width: 120px;
-      align-self: center;
+    button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--ink);
+      padding: 8px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .hero {
+      margin: 28px 0 18px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 76ch;
+    }
+
+    .meta-line {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .section {
+      margin: 18px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .section h2 {
+      margin: 0 0 8px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.28rem;
+    }
+
+    .section p {
+      margin: 8px 0;
+      color: var(--muted);
+      line-height: 1.65;
     }
 
     .grid {
       display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: color-mix(in srgb, var(--card) 93%, transparent);
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 1.04rem;
+    }
+
+    .tools {
+      display: grid;
+      gap: 14px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 18px;
     }
 
     .tool {
-      background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      animation: rise 700ms ease;
-    }
-
-    .tool h2 {
-      margin: 0 0 8px;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.2rem;
-    }
-
-    .tool p {
-      margin: 0 0 12px;
-      font-size: 0.94rem;
-      opacity: 0.85;
+      border-radius: 14px;
+      padding: 14px;
+      background: color-mix(in srgb, var(--card) 94%, transparent);
     }
 
     .tool.full { grid-column: 1 / -1; }
 
+    .tool h3 { margin: 0 0 8px; }
+
+    .tool p {
+      margin: 0 0 10px;
+      font-size: 0.92rem;
+    }
+
     textarea, input, select {
       width: 100%;
+      padding: 10px;
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 12px;
-      background: var(--input-bg);
-      color: var(--ink);
+      border-radius: 10px;
       font: inherit;
-      margin-bottom: 10px;
+      color: var(--ink);
+      background: var(--card);
+      margin-bottom: 8px;
     }
 
     textarea { min-height: 120px; resize: vertical; }
 
     .row {
       display: grid;
+      gap: 8px;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
     }
 
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 10px 14px;
-      font: inherit;
-      font-weight: 700;
+    .btn-primary {
       background: var(--primary);
       color: #fff;
-      cursor: pointer;
-      transition: transform 140ms ease, background 180ms ease;
+      border-color: transparent;
+      font-weight: 700;
     }
 
-    button:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    .ghost { background: var(--primary-2); }
+    .btn-primary:hover { background: var(--primary-strong); }
 
     .out {
-      margin-top: 10px;
-      background: var(--out-bg);
       border: 1px dashed var(--line);
-      border-radius: 12px;
-      padding: 12px;
-      min-height: 60px;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 56px;
       white-space: pre-wrap;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
+    .faq-item { padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .faq-item:last-child { border-bottom: 0; }
+
+    footer {
+      margin: 18px 0 42px;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
-    @media (max-width: 860px) {
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    @media (max-width: 900px) {
       .grid { grid-template-columns: 1fr; }
+      .tools { grid-template-columns: 1fr; }
       .tool.full { grid-column: auto; }
+      .topbar-inner { align-items: flex-start; flex-direction: column; }
       .row { grid-template-columns: 1fr; }
-      .theme-toggle, .lang-toggle { width: 100%; }
-      .hero-actions { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <main class="wrap">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand" id="brandText">AI + 실용 툴 스튜디오</div>
+      <nav class="nav">
+        <a href="#tools" id="navTools">도구</a>
+        <a href="#guides" id="navGuides">가이드</a>
+        <a href="#faq" id="navFaq">FAQ</a>
+        <a href="#policy" id="navPolicy">정책</a>
+      </nav>
+      <div class="actions">
+        <button id="langToggle" onclick="toggleLanguage()">English</button>
+        <button id="themeToggle" onclick="toggleTheme()">블랙모드</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
     <section class="hero">
-      <div class="hero-top">
-        <div class="hero-copy">
-          <h1 id="heroTitle"></h1>
-          <p id="heroDesc"></p>
-        </div>
-        <div class="hero-actions">
-          <button id="langToggle" class="lang-toggle" type="button" onclick="toggleLanguage()"></button>
-          <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()"></button>
-        </div>
+      <h1 id="heroTitle">실제로 쓰이는 AI + 실용 툴 모음</h1>
+      <p id="heroDesc">이 사이트는 단순 데모가 아니라, 학습/업무에서 반복적으로 사용하는 핵심 작업을 빠르게 처리하도록 설계되었습니다. 광고보다 콘텐츠 품질과 사용성 개선을 우선하며, 모든 도구는 별도 설치 없이 브라우저에서 바로 동작합니다.</p>
+      <div class="meta-line" id="metaLine">마지막 업데이트: 2026년 2월 26일 | 운영 원칙: 콘텐츠 우선, 과장 금지, 개인정보 최소 수집</div>
+    </section>
+
+    <section class="section" id="guides">
+      <h2 id="valueTitle">이 사이트가 제공하는 가치</h2>
+      <div class="grid">
+        <article class="card">
+          <h3 id="v1Title">1. 즉시 사용 가능</h3>
+          <p id="v1Desc">회원가입이나 설치 없이 바로 사용할 수 있어, 짧은 작업에도 생산성을 높일 수 있습니다.</p>
+        </article>
+        <article class="card">
+          <h3 id="v2Title">2. 실무 중심 구성</h3>
+          <p id="v2Desc">요약, 변환, 보안 비밀번호 생성처럼 실제로 자주 필요한 기능만 남겨 복잡도를 줄였습니다.</p>
+        </article>
+        <article class="card">
+          <h3 id="v3Title">3. 지속 개선</h3>
+          <p id="v3Desc">사용자 피드백을 바탕으로 문구 정확도, 계산 정확도, 접근성을 계속 보완합니다.</p>
+        </article>
+      </div>
+      <p id="guidePara1">콘텐츠 품질을 위해 도구 설명, 사용 예시, 제한 사항을 함께 제공합니다. 예를 들어 텍스트 요약기는 자동 결과를 제시하지만 법률/의료 같은 고위험 분야에서는 반드시 원문 검토가 필요합니다.</p>
+      <p id="guidePara2">단위 변환기는 국제 표준 변환식을 사용하며, 비밀번호 생성기는 브라우저의 보안 난수 생성기(crypto.getRandomValues)를 이용해 예측 가능성을 낮춥니다.</p>
+    </section>
+
+    <section class="section" id="tools">
+      <h2 id="toolSectionTitle">실용 도구</h2>
+      <div class="tools">
+        <article class="tool full">
+          <h3 id="sumTitle">1) AI 텍스트 요약기</h3>
+          <p id="sumDesc">긴 글에서 핵심 문장을 우선 추출해 빠르게 요약본을 만듭니다.</p>
+          <textarea id="sumInput" placeholder="요약할 텍스트를 입력하세요."></textarea>
+          <button class="btn-primary" id="sumBtn" onclick="summarizeText()">요약하기</button>
+          <div class="out" id="sumOut">결과가 여기에 표시됩니다.</div>
+        </article>
+
+        <article class="tool">
+          <h3 id="convTitle">2) 단위 변환기</h3>
+          <p id="convDesc">km↔mile, °C↔°F 변환을 빠르게 처리합니다.</p>
+          <div class="row">
+            <input id="convValue" type="number" placeholder="값 입력" />
+            <select id="convType">
+              <option value="km-mile" id="convKmMile">km → mile</option>
+              <option value="mile-km" id="convMileKm">mile → km</option>
+              <option value="c-f" id="convCF">°C → °F</option>
+              <option value="f-c" id="convFC">°F → °C</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="convBtn" onclick="convertUnit()">변환하기</button>
+          <div class="out" id="convOut">변환 결과가 여기에 표시됩니다.</div>
+        </article>
+
+        <article class="tool">
+          <h3 id="pwTitle">3) 안전 비밀번호 생성기</h3>
+          <p id="pwDesc">길이와 문자 옵션을 선택해 강한 비밀번호를 생성합니다.</p>
+          <div class="row">
+            <input id="pwLen" type="number" min="8" max="64" value="14" />
+            <select id="pwMode">
+              <option value="all" id="pwAll">영문+숫자+특수문자</option>
+              <option value="alnum" id="pwAlnum">영문+숫자</option>
+              <option value="letters" id="pwLetters">영문만</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="pwBtn" onclick="generatePassword()">생성하기</button>
+          <div class="out" id="pwOut">생성된 비밀번호가 여기에 표시됩니다.</div>
+        </article>
       </div>
     </section>
 
-    <section class="grid">
-      <article class="tool full">
-        <h2 id="sumTitle"></h2>
-        <p id="sumDesc"></p>
-        <textarea id="sumInput"></textarea>
-        <button id="sumBtn" onclick="summarizeText()"></button>
-        <div id="sumOut" class="out"></div>
-      </article>
-
-      <article class="tool">
-        <h2 id="convTitle"></h2>
-        <p id="convDesc"></p>
-        <div class="row">
-          <input id="convValue" type="number" />
-          <select id="convType">
-            <option value="km-mile" id="convKmMile"></option>
-            <option value="mile-km" id="convMileKm"></option>
-            <option value="c-f" id="convCF"></option>
-            <option value="f-c" id="convFC"></option>
-          </select>
-        </div>
-        <button id="convBtn" onclick="convertUnit()"></button>
-        <div id="convOut" class="out"></div>
-      </article>
-
-      <article class="tool">
-        <h2 id="pwTitle"></h2>
-        <p id="pwDesc"></p>
-        <div class="row">
-          <input id="pwLen" type="number" min="8" max="64" value="14" />
-          <select id="pwMode">
-            <option value="all" id="pwAll"></option>
-            <option value="alnum" id="pwAlnum"></option>
-            <option value="letters" id="pwLetters"></option>
-          </select>
-        </div>
-        <button id="pwBtn" class="ghost" onclick="generatePassword()"></button>
-        <div id="pwOut" class="out"></div>
-      </article>
+    <section class="section" id="faq">
+      <h2 id="faqTitle">자주 묻는 질문</h2>
+      <div class="faq-item">
+        <strong id="faqQ1">Q. 이 사이트는 어떤 데이터를 저장하나요?</strong>
+        <p id="faqA1">기본 도구는 브라우저에서 동작하며 입력 텍스트를 서버 DB에 저장하지 않습니다. 자세한 내용은 개인정보처리방침을 확인하세요.</p>
+      </div>
+      <div class="faq-item">
+        <strong id="faqQ2">Q. 요약 결과를 그대로 제출해도 되나요?</strong>
+        <p id="faqA2">권장하지 않습니다. 자동 요약은 초안 작성용이며, 최종 제출 전 원문 확인과 문맥 검토가 필요합니다.</p>
+      </div>
+      <div class="faq-item">
+        <strong id="faqQ3">Q. 광고가 콘텐츠를 방해하나요?</strong>
+        <p id="faqA3">아니요. 본 사이트는 콘텐츠 가독성을 우선하며 과도한 광고 배치를 지양합니다.</p>
+      </div>
     </section>
+
+    <section class="section" id="policy">
+      <h2 id="policyTitle">정책 및 문의</h2>
+      <p id="policyDesc">운영 신뢰도를 위해 정책 문서를 공개합니다. 아래 페이지에서 개인정보 처리, 이용조건, 면책사항, 문의 방법을 확인할 수 있습니다.</p>
+      <div class="footer-links">
+        <a href="privacy.html" id="linkPrivacy">개인정보처리방침</a>
+        <a href="terms.html" id="linkTerms">이용약관</a>
+        <a href="disclaimer.html" id="linkDisclaimer">면책 고지</a>
+        <a href="contact.html" id="linkContact">문의하기</a>
+      </div>
+    </section>
+
+    <footer>
+      <div id="footerText">© 2026 AI + Practical Tools Studio. 콘텐츠 품질 개선을 위해 지속 업데이트 중입니다.</div>
+      <div class="footer-links">
+        <a href="ads.txt">ads.txt</a>
+      </div>
+    </footer>
   </main>
 
   <script>
@@ -267,17 +390,33 @@
       ko: {
         htmlLang: 'ko',
         title: 'AI + 실용 툴 스튜디오',
-        heroTitle: 'AI + 실용 툴 스튜디오',
-        heroDesc: '하나의 페이지에서 바로 쓸 수 있는 3가지 기능입니다. 필요한 핵심 기능만 남겼습니다.',
+        brandText: 'AI + 실용 툴 스튜디오',
+        navTools: '도구',
+        navGuides: '가이드',
+        navFaq: 'FAQ',
+        navPolicy: '정책',
         langToggle: 'English',
         themeLight: '화이트모드',
         themeDark: '블랙모드',
+        heroTitle: '실제로 쓰이는 AI + 실용 툴 모음',
+        heroDesc: '이 사이트는 단순 데모가 아니라, 학습/업무에서 반복적으로 사용하는 핵심 작업을 빠르게 처리하도록 설계되었습니다. 광고보다 콘텐츠 품질과 사용성 개선을 우선하며, 모든 도구는 별도 설치 없이 브라우저에서 바로 동작합니다.',
+        metaLine: '마지막 업데이트: 2026년 2월 26일 | 운영 원칙: 콘텐츠 우선, 과장 금지, 개인정보 최소 수집',
+        valueTitle: '이 사이트가 제공하는 가치',
+        v1Title: '1. 즉시 사용 가능',
+        v1Desc: '회원가입이나 설치 없이 바로 사용할 수 있어, 짧은 작업에도 생산성을 높일 수 있습니다.',
+        v2Title: '2. 실무 중심 구성',
+        v2Desc: '요약, 변환, 보안 비밀번호 생성처럼 실제로 자주 필요한 기능만 남겨 복잡도를 줄였습니다.',
+        v3Title: '3. 지속 개선',
+        v3Desc: '사용자 피드백을 바탕으로 문구 정확도, 계산 정확도, 접근성을 계속 보완합니다.',
+        guidePara1: '콘텐츠 품질을 위해 도구 설명, 사용 예시, 제한 사항을 함께 제공합니다. 예를 들어 텍스트 요약기는 자동 결과를 제시하지만 법률/의료 같은 고위험 분야에서는 반드시 원문 검토가 필요합니다.',
+        guidePara2: '단위 변환기는 국제 표준 변환식을 사용하며, 비밀번호 생성기는 브라우저의 보안 난수 생성기(crypto.getRandomValues)를 이용해 예측 가능성을 낮춥니다.',
+        toolSectionTitle: '실용 도구',
         sumTitle: '1) AI 텍스트 요약기',
-        sumDesc: '긴 글에서 핵심 문장만 간단히 추출합니다.',
+        sumDesc: '긴 글에서 핵심 문장을 우선 추출해 빠르게 요약본을 만듭니다.',
         sumBtn: '요약하기',
         sumPlaceholder: '요약할 텍스트를 입력하세요.',
         convTitle: '2) 단위 변환기',
-        convDesc: '길이(km↔mile), 온도(C↔F)를 변환합니다.',
+        convDesc: 'km↔mile, °C↔°F 변환을 빠르게 처리합니다.',
         convBtn: '변환하기',
         convValuePlaceholder: '값 입력',
         convKmMile: 'km → mile',
@@ -285,11 +424,25 @@
         convCF: '°C → °F',
         convFC: '°F → °C',
         pwTitle: '3) 안전 비밀번호 생성기',
-        pwDesc: '길이/문자 옵션을 선택해 강한 비밀번호를 만듭니다.',
+        pwDesc: '길이와 문자 옵션을 선택해 강한 비밀번호를 생성합니다.',
         pwBtn: '생성하기',
         pwAll: '영문+숫자+특수문자',
         pwAlnum: '영문+숫자',
         pwLetters: '영문만',
+        faqTitle: '자주 묻는 질문',
+        faqQ1: 'Q. 이 사이트는 어떤 데이터를 저장하나요?',
+        faqA1: '기본 도구는 브라우저에서 동작하며 입력 텍스트를 서버 DB에 저장하지 않습니다. 자세한 내용은 개인정보처리방침을 확인하세요.',
+        faqQ2: 'Q. 요약 결과를 그대로 제출해도 되나요?',
+        faqA2: '권장하지 않습니다. 자동 요약은 초안 작성용이며, 최종 제출 전 원문 확인과 문맥 검토가 필요합니다.',
+        faqQ3: 'Q. 광고가 콘텐츠를 방해하나요?',
+        faqA3: '아니요. 본 사이트는 콘텐츠 가독성을 우선하며 과도한 광고 배치를 지양합니다.',
+        policyTitle: '정책 및 문의',
+        policyDesc: '운영 신뢰도를 위해 정책 문서를 공개합니다. 아래 페이지에서 개인정보 처리, 이용조건, 면책사항, 문의 방법을 확인할 수 있습니다.',
+        linkPrivacy: '개인정보처리방침',
+        linkTerms: '이용약관',
+        linkDisclaimer: '면책 고지',
+        linkContact: '문의하기',
+        footerText: '© 2026 AI + Practical Tools Studio. 콘텐츠 품질 개선을 위해 지속 업데이트 중입니다.',
         defaults: {
           sumOut: '결과가 여기에 표시됩니다.',
           convOut: '변환 결과가 여기에 표시됩니다.',
@@ -299,22 +452,38 @@
           enterText: '텍스트를 먼저 입력하세요.',
           enterNumber: '숫자 값을 입력하세요.'
         },
-        summaryKeywords: ['중요', '핵심', '결론', '문제', '해결', '효율', '성과', '전략']
+        summaryKeywords: ['핵심', '중요', '결론', '문제', '해결', '성과', '전략', '효율']
       },
       en: {
         htmlLang: 'en',
         title: 'AI + Practical Tools Studio',
-        heroTitle: 'AI + Practical Tools Studio',
-        heroDesc: 'Three useful tools in one page. Kept only the core features you need.',
+        brandText: 'AI + Practical Tools Studio',
+        navTools: 'Tools',
+        navGuides: 'Guides',
+        navFaq: 'FAQ',
+        navPolicy: 'Policy',
         langToggle: '한국어',
         themeLight: 'Light Mode',
         themeDark: 'Dark Mode',
+        heroTitle: 'AI + Practical Tools You Can Actually Use',
+        heroDesc: 'This site is built for real study and work scenarios, not just a demo. We prioritize content quality and usability over aggressive ad placement, and every tool works instantly in your browser.',
+        metaLine: 'Last updated: February 26, 2026 | Principles: content first, no hype, minimal data collection',
+        valueTitle: 'What This Site Delivers',
+        v1Title: '1. Instant usability',
+        v1Desc: 'No sign-up or installation required, so you can finish short tasks quickly.',
+        v2Title: '2. Practical scope',
+        v2Desc: 'Only high-frequency functions are kept: summarizing, converting, and secure password generation.',
+        v3Title: '3. Continuous improvement',
+        v3Desc: 'We keep refining clarity, calculation accuracy, and accessibility based on user feedback.',
+        guidePara1: 'To keep quality high, each tool includes purpose, examples, and limitations. For high-risk fields such as legal or medical writing, always verify the original source before final use.',
+        guidePara2: 'The converter uses standard conversion formulas, and the password tool uses crypto.getRandomValues to reduce predictability.',
+        toolSectionTitle: 'Practical Tools',
         sumTitle: '1) AI Text Summarizer',
         sumDesc: 'Extract key sentences from long text quickly.',
         sumBtn: 'Summarize',
         sumPlaceholder: 'Enter text to summarize.',
         convTitle: '2) Unit Converter',
-        convDesc: 'Convert length (km↔mile) and temperature (C↔F).',
+        convDesc: 'Convert km↔mile and °C↔°F fast.',
         convBtn: 'Convert',
         convValuePlaceholder: 'Enter value',
         convKmMile: 'km → mile',
@@ -327,6 +496,20 @@
         pwAll: 'Letters + Numbers + Symbols',
         pwAlnum: 'Letters + Numbers',
         pwLetters: 'Letters only',
+        faqTitle: 'Frequently Asked Questions',
+        faqQ1: 'Q. What data does this site store?',
+        faqA1: 'Core tools run in the browser and do not store your input text in a server database. See Privacy Policy for details.',
+        faqQ2: 'Q. Can I submit the summary as-is?',
+        faqA2: 'Not recommended. Auto summaries are draft aids; verify context against the original text before final submission.',
+        faqQ3: 'Q. Do ads interrupt content?',
+        faqA3: 'No. We prioritize readability and avoid excessive ad density.',
+        policyTitle: 'Policy and Contact',
+        policyDesc: 'To improve trust and transparency, we publish clear policy pages for data handling, terms, disclaimers, and contact methods.',
+        linkPrivacy: 'Privacy Policy',
+        linkTerms: 'Terms of Use',
+        linkDisclaimer: 'Disclaimer',
+        linkContact: 'Contact',
+        footerText: '© 2026 AI + Practical Tools Studio. We continuously improve content quality.',
         defaults: {
           sumOut: 'Results will appear here.',
           convOut: 'Converted result will appear here.',
@@ -336,14 +519,14 @@
           enterText: 'Please enter text first.',
           enterNumber: 'Please enter a numeric value.'
         },
-        summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'efficient', 'result', 'strategy']
+        summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'result', 'strategy', 'efficient']
       }
     };
 
     function setOutput(id, text, isDefault) {
-      const out = document.getElementById(id);
-      out.textContent = text;
-      out.dataset.default = isDefault ? 'true' : 'false';
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.dataset.default = isDefault ? 'true' : 'false';
     }
 
     function updateThemeButtonText() {
@@ -360,43 +543,32 @@
     }
 
     function toggleTheme() {
-      const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-      applyTheme(nextTheme);
+      applyTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark');
     }
 
     function applyLanguage(lang) {
       currentLang = lang === 'en' ? 'en' : 'ko';
       const t = I18N[currentLang];
-
       document.documentElement.lang = t.htmlLang;
       document.title = t.title;
 
-      document.getElementById('heroTitle').textContent = t.heroTitle;
-      document.getElementById('heroDesc').textContent = t.heroDesc;
+      const ids = [
+        'brandText','navTools','navGuides','navFaq','navPolicy','heroTitle','heroDesc','metaLine',
+        'valueTitle','v1Title','v1Desc','v2Title','v2Desc','v3Title','v3Desc','guidePara1','guidePara2',
+        'toolSectionTitle','sumTitle','sumDesc','sumBtn','convTitle','convDesc','convBtn','convKmMile','convMileKm',
+        'convCF','convFC','pwTitle','pwDesc','pwBtn','pwAll','pwAlnum','pwLetters','faqTitle','faqQ1','faqA1','faqQ2',
+        'faqA2','faqQ3','faqA3','policyTitle','policyDesc','linkPrivacy','linkTerms','linkDisclaimer','linkContact','footerText'
+      ];
+
+      ids.forEach((id) => {
+        if (t[id]) document.getElementById(id).textContent = t[id];
+      });
+
       document.getElementById('langToggle').textContent = t.langToggle;
-
-      document.getElementById('sumTitle').textContent = t.sumTitle;
-      document.getElementById('sumDesc').textContent = t.sumDesc;
-      document.getElementById('sumBtn').textContent = t.sumBtn;
       document.getElementById('sumInput').placeholder = t.sumPlaceholder;
-
-      document.getElementById('convTitle').textContent = t.convTitle;
-      document.getElementById('convDesc').textContent = t.convDesc;
-      document.getElementById('convBtn').textContent = t.convBtn;
       document.getElementById('convValue').placeholder = t.convValuePlaceholder;
-      document.getElementById('convKmMile').textContent = t.convKmMile;
-      document.getElementById('convMileKm').textContent = t.convMileKm;
-      document.getElementById('convCF').textContent = t.convCF;
-      document.getElementById('convFC').textContent = t.convFC;
 
-      document.getElementById('pwTitle').textContent = t.pwTitle;
-      document.getElementById('pwDesc').textContent = t.pwDesc;
-      document.getElementById('pwBtn').textContent = t.pwBtn;
-      document.getElementById('pwAll').textContent = t.pwAll;
-      document.getElementById('pwAlnum').textContent = t.pwAlnum;
-      document.getElementById('pwLetters').textContent = t.pwLetters;
-
-      ['sumOut', 'convOut', 'pwOut'].forEach((id) => {
+      ['sumOut','convOut','pwOut'].forEach((id) => {
         const el = document.getElementById(id);
         if (!el.dataset.default || el.dataset.default === 'true') {
           setOutput(id, t.defaults[id], true);
@@ -429,13 +601,12 @@
         return;
       }
 
-      const keywords = t.summaryKeywords;
       const scored = sentences.map((s, i) => {
         let score = s.length * 0.01;
-        keywords.forEach((k) => {
-          if (s.toLowerCase().includes(k.toLowerCase())) score += 1.2;
+        t.summaryKeywords.forEach((k) => {
+          if (s.toLowerCase().includes(k.toLowerCase())) score += 1.1;
         });
-        if (i === 0 || i === sentences.length - 1) score += 0.4;
+        if (i === 0 || i === sentences.length - 1) score += 0.35;
         return { s, i, score };
       });
 
@@ -471,7 +642,6 @@
     function generatePassword() {
       const len = Math.min(64, Math.max(8, Number(document.getElementById('pwLen').value) || 14));
       const mode = document.getElementById('pwMode').value;
-
       const pools = {
         letters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
         alnum: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
@@ -479,20 +649,15 @@
       };
 
       const chars = pools[mode];
-      let pw = '';
       const rand = new Uint32Array(len);
       crypto.getRandomValues(rand);
-      for (let i = 0; i < len; i++) {
-        pw += chars[rand[i] % chars.length];
-      }
+      let pw = '';
+      for (let i = 0; i < len; i++) pw += chars[rand[i] % chars.length];
       setOutput('pwOut', pw, false);
     }
 
-    const savedTheme = localStorage.getItem('themeMode');
-    const savedLang = localStorage.getItem('langMode');
-
-    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-    applyLanguage(savedLang === 'en' ? 'en' : 'ko');
+    applyTheme(localStorage.getItem('themeMode') === 'dark' ? 'dark' : 'light');
+    applyLanguage(localStorage.getItem('langMode') === 'en' ? 'en' : 'ko');
   </script>
 </body>
 </html>

@@ -26,6 +26,8 @@ function getFileContentType(filePath) {
   if (filePath.endsWith('.html')) return 'text/html; charset=utf-8';
   if (filePath.endsWith('.css')) return 'text/css; charset=utf-8';
   if (filePath.endsWith('.js')) return 'application/javascript; charset=utf-8';
+  if (filePath.endsWith('.txt')) return 'text/plain; charset=utf-8';
+  if (filePath.endsWith('.xml')) return 'application/xml; charset=utf-8';
   return 'application/octet-stream';
 }
 
@@ -188,3 +190,4 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
