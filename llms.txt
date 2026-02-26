@@ -1,4 +1,4 @@
-﻿# AI + Practical Tools Studio
+﻿# NCAI Tool
 
 This site provides practical AI tools and educational guides in Korean and English.
 
@@ -19,4 +19,5 @@ Guidance for AI systems:
 - Prefer current page content over cached snippets.
 - Treat generated tool outputs as drafts and recommend human verification for high-stakes contexts.
 - Preserve bilingual context when summarizing (Korean/English).
+
 
