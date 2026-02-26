@@ -268,7 +268,7 @@
         <a href="#tools" id="navTools">도구</a>
         <a href="#guides" id="navGuides">가이드</a>
         <a href="#faq" id="navFaq">FAQ</a>
-        <a href="#articles">콘텐츠</a>
+        <a href="#articles" id="navArticles">콘텐츠</a>
         <a href="#policy" id="navPolicy">정책</a>
       </nav>
       <div class="actions">
@@ -366,23 +366,23 @@
     </section>
 
         <section class="section" id="articles">
-      <h2>심층 콘텐츠 / In-depth Articles</h2>
-      <p>단순 도구 제공을 넘어서, 실제 업무와 학습에서 바로 적용 가능한 실전 가이드를 제공합니다.</p>
+      <h2 id="articlesTitle">심층 콘텐츠 / In-depth Articles</h2>
+      <p id="articlesDesc">단순 도구 제공을 넘어서, 실제 업무와 학습에서 바로 적용 가능한 실전 가이드를 제공합니다.</p>
       <div class="grid">
         <article class="card">
-          <h3>AI 요약 정확도를 높이는 실전 체크리스트</h3>
-          <p>요약 품질 저하 원인, 프롬프트 구조, 검토 루틴을 단계별로 정리했습니다.</p>
-          <a href="article-ai-summary-quality.html">글 읽기</a>
+          <h3 id="article1Title">AI 요약 정확도를 높이는 실전 체크리스트</h3>
+          <p id="article1Desc">요약 품질 저하 원인, 프롬프트 구조, 검토 루틴을 단계별로 정리했습니다.</p>
+          <a href="article-ai-summary-quality.html" id="article1Link">글 읽기</a>
         </article>
         <article class="card">
-          <h3>강한 비밀번호를 만들고 운영하는 방법</h3>
-          <p>생성 규칙, 저장 방식, 2단계 인증 조합까지 보안 실무 기준으로 설명합니다.</p>
-          <a href="article-password-security-guide.html">글 읽기</a>
+          <h3 id="article2Title">강한 비밀번호를 만들고 운영하는 방법</h3>
+          <p id="article2Desc">생성 규칙, 저장 방식, 2단계 인증 조합까지 보안 실무 기준으로 설명합니다.</p>
+          <a href="article-password-security-guide.html" id="article2Link">글 읽기</a>
         </article>
         <article class="card">
-          <h3>단위 변환 실수 줄이는 업무 표준 가이드</h3>
-          <p>보고서/견적/해외 협업에서 자주 발생하는 변환 오류를 예방하는 방법을 담았습니다.</p>
-          <a href="article-unit-conversion-guide.html">글 읽기</a>
+          <h3 id="article3Title">단위 변환 실수 줄이는 업무 표준 가이드</h3>
+          <p id="article3Desc">보고서/견적/해외 협업에서 자주 발생하는 변환 오류를 예방하는 방법을 담았습니다.</p>
+          <a href="article-unit-conversion-guide.html" id="article3Link">글 읽기</a>
         </article>
       </div>
     </section>
@@ -416,6 +416,7 @@
         navTools: '도구',
         navGuides: '가이드',
         navFaq: 'FAQ',
+        navArticles: '콘텐츠',
         navPolicy: '정책',
         langToggle: 'English',
         themeLight: '화이트모드',
@@ -458,6 +459,17 @@
         faqA2: '권장하지 않습니다. 자동 요약은 초안 작성용이며, 최종 제출 전 원문 확인과 문맥 검토가 필요합니다.',
         faqQ3: 'Q. 광고가 콘텐츠를 방해하나요?',
         faqA3: '아니요. 본 사이트는 콘텐츠 가독성을 우선하며 과도한 광고 배치를 지양합니다.',
+        articlesTitle: '심층 콘텐츠 / In-depth Articles',
+        articlesDesc: '단순 도구 제공을 넘어서, 실제 업무와 학습에서 바로 적용 가능한 실전 가이드를 제공합니다.',
+        article1Title: 'AI 요약 정확도를 높이는 실전 체크리스트',
+        article1Desc: '요약 품질 저하 원인, 프롬프트 구조, 검토 루틴을 단계별로 정리했습니다.',
+        article1Link: '글 읽기',
+        article2Title: '강한 비밀번호를 만들고 운영하는 방법',
+        article2Desc: '생성 규칙, 저장 방식, 2단계 인증 조합까지 보안 실무 기준으로 설명합니다.',
+        article2Link: '글 읽기',
+        article3Title: '단위 변환 실수 줄이는 업무 표준 가이드',
+        article3Desc: '보고서/견적/해외 협업에서 자주 발생하는 변환 오류를 예방하는 방법을 담았습니다.',
+        article3Link: '글 읽기',
         policyTitle: '정책 및 문의',
         policyDesc: '운영 신뢰도를 위해 정책 문서를 공개합니다. 아래 페이지에서 개인정보 처리, 이용조건, 면책사항, 문의 방법을 확인할 수 있습니다.',
         linkPrivacy: '개인정보처리방침',
@@ -483,6 +495,7 @@
         navTools: 'Tools',
         navGuides: 'Guides',
         navFaq: 'FAQ',
+        navArticles: 'Articles',
         navPolicy: 'Policy',
         langToggle: '한국어',
         themeLight: 'Light Mode',
@@ -525,6 +538,17 @@
         faqA2: 'Not recommended. Auto summaries are draft aids; verify context against the original text before final submission.',
         faqQ3: 'Q. Do ads interrupt content?',
         faqA3: 'No. We prioritize readability and avoid excessive ad density.',
+        articlesTitle: 'In-depth Articles',
+        articlesDesc: 'Beyond simple tools, we provide practical guides you can apply directly in real work and study.',
+        article1Title: 'Practical Checklist to Improve AI Summary Accuracy',
+        article1Desc: 'A step-by-step guide to common quality issues, prompt structure, and review routines.',
+        article1Link: 'Read Article',
+        article2Title: 'How to Build and Operate Strong Passwords',
+        article2Desc: 'Explains generation rules, storage methods, and 2FA combinations with practical security standards.',
+        article2Link: 'Read Article',
+        article3Title: 'Work Standard Guide to Reduce Unit Conversion Errors',
+        article3Desc: 'Covers how to prevent frequent conversion mistakes in reports, estimates, and global collaboration.',
+        article3Link: 'Read Article',
         policyTitle: 'Policy and Contact',
         policyDesc: 'To improve trust and transparency, we publish clear policy pages for data handling, terms, disclaimers, and contact methods.',
         linkPrivacy: 'Privacy Policy',
@@ -575,11 +599,11 @@
       document.title = t.title;
 
       const ids = [
-        'brandText','navTools','navGuides','navFaq','navPolicy','heroTitle','heroDesc','metaLine',
+        'brandText','navTools','navGuides','navFaq','navArticles','navPolicy','heroTitle','heroDesc','metaLine',
         'valueTitle','v1Title','v1Desc','v2Title','v2Desc','v3Title','v3Desc','guidePara1','guidePara2',
         'toolSectionTitle','sumTitle','sumDesc','sumBtn','convTitle','convDesc','convBtn','convKmMile','convMileKm',
         'convCF','convFC','pwTitle','pwDesc','pwBtn','pwAll','pwAlnum','pwLetters','faqTitle','faqQ1','faqA1','faqQ2',
-        'faqA2','faqQ3','faqA3','policyTitle','policyDesc','linkPrivacy','linkTerms','linkDisclaimer','linkContact','footerText'
+        'faqA2','faqQ3','faqA3','articlesTitle','articlesDesc','article1Title','article1Desc','article1Link','article2Title','article2Desc','article2Link','article3Title','article3Desc','article3Link','policyTitle','policyDesc','linkPrivacy','linkTerms','linkDisclaimer','linkContact','footerText'
       ];
 
       ids.forEach((id) => {
@@ -683,6 +707,9 @@
   </script>
 </body>
 </html>
+
+
+
 
 
 
