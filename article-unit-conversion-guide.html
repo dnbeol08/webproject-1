@@ -4,37 +4,93 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>단위 변환 실수 줄이는 업무 표준 가이드</title>
-  <meta name="description" content="km-mile, C-F 변환에서 자주 발생하는 실수를 줄이기 위한 실무 체크리스트" />
-  <style>body{font-family:Arial,sans-serif;max-width:920px;margin:38px auto;padding:0 16px;line-height:1.75;color:#1a2430}h1,h2,h3{line-height:1.35}a{color:#0e5ad2}.meta{color:#5c6b7a;font-size:.95rem}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #d8e1ec;padding:8px;text-align:left}th{background:#f3f7fd}</style>
+  <meta name="description" content="Unit conversion guide" />
+  <style>
+    body{font-family:Arial,sans-serif;max-width:920px;margin:38px auto;padding:0 16px;line-height:1.75;color:#1a2430}
+    h1,h2,h3{line-height:1.35}
+    a{color:#0e5ad2}
+    .meta{color:#5c6b7a;font-size:.95rem}
+    table{border-collapse:collapse;width:100%;margin:10px 0}
+    th,td{border:1px solid #d8e1ec;padding:8px;text-align:left}
+    th{background:#f3f7fd}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    button{border:1px solid #cdd8e8;background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer}
+  </style>
 </head>
 <body>
-  <h1>단위 변환 실수 줄이는 업무 표준 가이드</h1>
-  <p class="meta">게시일: 2026년 2월 26일 | 분류: 데이터 정확성</p>
+  <div class="top"><p class="meta" id="meta"></p><button id="langToggle" onclick="toggleLang()"></button></div>
+  <h1 id="title"></h1>
+  <p id="intro"></p>
 
-  <p>단위 변환 오류는 작은 오타처럼 보이지만, 견적/납기/품질지표를 크게 왜곡할 수 있습니다. 특히 글로벌 협업에서는 단위 표기 규칙이 팀마다 달라 오류가 반복됩니다.</p>
-
-  <h2>1. 가장 많이 발생하는 오류 유형</h2>
+  <h2 id="s1t"></h2>
   <table>
-    <tr><th>오류 유형</th><th>설명</th><th>예방 방법</th></tr>
-    <tr><td>단위 미표기</td><td>숫자만 전달해 해석이 갈림</td><td>숫자 뒤에 단위를 고정 표기</td></tr>
-    <tr><td>반올림 과다</td><td>중간 계산에서 반올림해 오차 누적</td><td>최종 단계에서만 반올림</td></tr>
-    <tr><td>화씨/섭씨 혼동</td><td>기호 누락으로 반대 단위 해석</td><td>°C, °F를 문장 내 반복 표기</td></tr>
+    <tr><th id="th1"></th><th id="th2"></th><th id="th3"></th></tr>
+    <tr><td id="r11"></td><td id="r12"></td><td id="r13"></td></tr>
+    <tr><td id="r21"></td><td id="r22"></td><td id="r23"></td></tr>
+    <tr><td id="r31"></td><td id="r32"></td><td id="r33"></td></tr>
   </table>
 
-  <h2>2. 표준 변환식 확인</h2>
-  <p>km -> mile: km × 0.621371<br/>mile -> km: mile ÷ 0.621371<br/>°C -> °F: (°C × 9/5) + 32<br/>°F -> °C: (°F - 32) × 5/9</p>
+  <h2 id="s2t"></h2><p id="s2p"></p>
+  <h2 id="s3t"></h2>
+  <h3 id="s31t"></h3><p id="s31p"></p>
+  <h3 id="s32t"></h3><p id="s32p"></p>
+  <h3 id="s33t"></h3><p id="s33p"></p>
 
-  <h2>3. 보고서 작성 시 체크리스트</h2>
-  <h3>3-1. 본문/표/그래프 단위 통일</h3>
-  <p>동일 문서 내 단위가 섞이면 오해가 커집니다. 원칙 단위를 먼저 선언하세요.</p>
-  <h3>3-2. 변환 출처 명시</h3>
-  <p>자동 변환 도구를 사용했다면 변환식을 각주 또는 부록에 남기세요.</p>
-  <h3>3-3. 임계값 검토</h3>
-  <p>온도/거리 기준값(경보 기준 등)은 변환 후 임계 조건이 달라질 수 있으므로 별도 검증이 필요합니다.</p>
+  <h2 id="ct"></h2><p id="cp"></p>
+  <p><a href="index.html" id="back"></a></p>
 
-  <h2>결론</h2>
-  <p>정확한 단위 변환은 계산 능력보다 "문서 표준화"의 문제입니다. 단위 선언, 중간 반올림 금지, 최종 검증 습관만 지켜도 대부분의 실수를 예방할 수 있습니다.</p>
-
-  <p><a href="index.html">메인으로 돌아가기</a></p>
+  <script>
+    let lang = localStorage.getItem('langMode') === 'en' ? 'en' : 'ko';
+    const T = {
+      ko: {
+        pageTitle:'단위 변환 실수 줄이는 업무 표준 가이드',
+        meta:'게시일: 2026년 2월 26일 | 분류: 데이터 정확성',
+        intro:'단위 변환 오류는 보고서, 견적, 해외 협업에서 실제 손실로 이어질 수 있습니다.',
+        s1t:'1. 가장 많이 발생하는 오류 유형',
+        th1:'오류 유형', th2:'설명', th3:'예방 방법',
+        r11:'단위 미표기', r12:'숫자만 전달해 해석이 갈림', r13:'숫자 뒤 단위를 고정 표기',
+        r21:'반올림 과다', r22:'중간 계산 반올림으로 오차 누적', r23:'최종 단계에서만 반올림',
+        r31:'화씨/섭씨 혼동', r32:'기호 누락으로 반대 단위 해석', r33:'°C, °F를 반복 표기',
+        s2t:'2. 표준 변환식 확인',
+        s2p:'km -> mile: km × 0.621371 | mile -> km: mile ÷ 0.621371 | °C -> °F: (°C × 9/5) + 32 | °F -> °C: (°F - 32) × 5/9',
+        s3t:'3. 보고서 작성 시 체크리스트',
+        s31t:'3-1. 본문/표/그래프 단위 통일', s31p:'문서의 기준 단위를 먼저 선언하고 일관되게 사용하세요.',
+        s32t:'3-2. 변환 출처 명시', s32p:'자동 변환 도구를 사용했다면 변환식을 각주/부록에 남기세요.',
+        s33t:'3-3. 임계값 검토', s33p:'온도/거리 기준값은 변환 후 조건이 달라질 수 있으니 별도 검증이 필요합니다.',
+        ct:'결론', cp:'정확한 단위 변환은 계산보다 문서 표준화 문제입니다.',
+        back:'메인으로 돌아가기', langBtn:'English'
+      },
+      en: {
+        pageTitle:'Work Standard Guide to Reduce Unit Conversion Errors',
+        meta:'Published: February 26, 2026 | Category: Data Accuracy',
+        intro:'Conversion mistakes can create real losses in reports, estimates, and international collaboration.',
+        s1t:'1. Most frequent error types',
+        th1:'Error Type', th2:'Description', th3:'Prevention',
+        r11:'Missing unit labels', r12:'Numbers are shared without unit context', r13:'Always append explicit units',
+        r21:'Early rounding', r22:'Intermediate rounding accumulates error', r23:'Round only at final output',
+        r31:'Fahrenheit/Celsius mix-up', r32:'Missing symbols reverse interpretation', r33:'Repeat °C and °F labels',
+        s2t:'2. Standard formulas',
+        s2p:'km -> mile: km × 0.621371 | mile -> km: mile ÷ 0.621371 | °C -> °F: (°C × 9/5) + 32 | °F -> °C: (°F - 32) × 5/9',
+        s3t:'3. Report checklist',
+        s31t:'3-1. Keep one unit system', s31p:'Declare base units first and keep consistency in text, tables, and charts.',
+        s32t:'3-2. Show conversion source', s32p:'If automation is used, record formulas in notes or appendix.',
+        s33t:'3-3. Re-check thresholds', s33p:'Alert limits can shift after conversion; verify threshold logic separately.',
+        ct:'Conclusion', cp:'Accurate conversion is more about document standards than raw calculation.',
+        back:'Back to Home', langBtn:'한국어'
+      }
+    };
+    function applyLanguage(next){
+      lang = next === 'en' ? 'en' : 'ko';
+      localStorage.setItem('langMode', lang);
+      const t = T[lang];
+      document.documentElement.lang = lang;
+      document.title = t.pageTitle;
+      ['meta','title','intro','s1t','th1','th2','th3','r11','r12','r13','r21','r22','r23','r31','r32','r33','s2t','s2p','s3t','s31t','s31p','s32t','s32p','s33t','s33p','ct','cp','back']
+      .forEach((id)=>{ document.getElementById(id).textContent = t[id]; });
+      document.getElementById('langToggle').textContent = t.langBtn;
+    }
+    function toggleLang(){ applyLanguage(lang === 'ko' ? 'en' : 'ko'); }
+    applyLanguage(lang);
+  </script>
 </body>
 </html>
