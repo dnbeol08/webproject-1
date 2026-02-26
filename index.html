@@ -346,6 +346,32 @@
           <button class="btn-primary" id="pwBtn" onclick="generatePassword()">생성하기</button>
           <div class="out" id="pwOut">생성된 비밀번호가 여기에 표시됩니다.</div>
         </article>
+
+        <article class="tool">
+          <h3 id="kwTitle">4) AI 키워드 추출기</h3>
+          <p id="kwDesc">긴 문장에서 핵심 키워드를 빈도 기반으로 자동 추출합니다.</p>
+          <textarea id="kwInput" placeholder="분석할 텍스트를 입력하세요."></textarea>
+          <div class="row">
+            <input id="kwCount" type="number" min="3" max="20" value="8" />
+            <button class="btn-primary" id="kwBtn" onclick="extractKeywords()">추출하기</button>
+          </div>
+          <div class="out" id="kwOut">핵심 키워드가 여기에 표시됩니다.</div>
+        </article>
+
+        <article class="tool">
+          <h3 id="replyTitle">5) AI 답장 초안 생성기</h3>
+          <p id="replyDesc">받은 메시지를 기반으로 상황에 맞는 답장 초안을 작성합니다.</p>
+          <textarea id="replyInput" placeholder="답장할 원문 메시지를 입력하세요."></textarea>
+          <div class="row">
+            <select id="replyTone">
+              <option value="formal" id="replyToneFormal">정중</option>
+              <option value="friendly" id="replyToneFriendly">친근</option>
+              <option value="short" id="replyToneShort">간단</option>
+            </select>
+            <button class="btn-primary" id="replyBtn" onclick="generateReplyDraft()">초안 만들기</button>
+          </div>
+          <div class="out" id="replyOut">생성된 답장 초안이 여기에 표시됩니다.</div>
+        </article>
       </div>
     </section>
 
@@ -452,6 +478,17 @@
         pwAll: '영문+숫자+특수문자',
         pwAlnum: '영문+숫자',
         pwLetters: '영문만',
+        kwTitle: '4) AI 키워드 추출기',
+        kwDesc: '긴 문장에서 핵심 키워드를 빈도 기반으로 자동 추출합니다.',
+        kwBtn: '추출하기',
+        kwPlaceholder: '분석할 텍스트를 입력하세요.',
+        replyTitle: '5) AI 답장 초안 생성기',
+        replyDesc: '받은 메시지를 기반으로 상황에 맞는 답장 초안을 작성합니다.',
+        replyBtn: '초안 만들기',
+        replyPlaceholder: '답장할 원문 메시지를 입력하세요.',
+        replyToneFormal: '정중',
+        replyToneFriendly: '친근',
+        replyToneShort: '간단',
         faqTitle: '자주 묻는 질문',
         faqQ1: 'Q. 이 사이트는 어떤 데이터를 저장하나요?',
         faqA1: '기본 도구는 브라우저에서 동작하며 입력 텍스트를 서버 DB에 저장하지 않습니다. 자세한 내용은 개인정보처리방침을 확인하세요.',
@@ -480,11 +517,14 @@
         defaults: {
           sumOut: '결과가 여기에 표시됩니다.',
           convOut: '변환 결과가 여기에 표시됩니다.',
-          pwOut: '생성된 비밀번호가 여기에 표시됩니다.'
+          pwOut: '생성된 비밀번호가 여기에 표시됩니다.',
+          kwOut: '핵심 키워드가 여기에 표시됩니다.',
+          replyOut: '생성된 답장 초안이 여기에 표시됩니다.'
         },
         msg: {
           enterText: '텍스트를 먼저 입력하세요.',
-          enterNumber: '숫자 값을 입력하세요.'
+          enterNumber: '숫자 값을 입력하세요.',
+          enterMessage: '원문 메시지를 먼저 입력하세요.'
         },
         summaryKeywords: ['핵심', '중요', '결론', '문제', '해결', '성과', '전략', '효율']
       },
@@ -531,6 +571,17 @@
         pwAll: 'Letters + Numbers + Symbols',
         pwAlnum: 'Letters + Numbers',
         pwLetters: 'Letters only',
+        kwTitle: '4) AI Keyword Extractor',
+        kwDesc: 'Automatically extracts core keywords from long text using frequency scoring.',
+        kwBtn: 'Extract',
+        kwPlaceholder: 'Enter text to analyze.',
+        replyTitle: '5) AI Reply Draft Generator',
+        replyDesc: 'Creates context-aware reply drafts based on an incoming message.',
+        replyBtn: 'Draft Reply',
+        replyPlaceholder: 'Paste the incoming message to reply to.',
+        replyToneFormal: 'Formal',
+        replyToneFriendly: 'Friendly',
+        replyToneShort: 'Short',
         faqTitle: 'Frequently Asked Questions',
         faqQ1: 'Q. What data does this site store?',
         faqA1: 'Core tools run in the browser and do not store your input text in a server database. See Privacy Policy for details.',
@@ -559,11 +610,14 @@
         defaults: {
           sumOut: 'Results will appear here.',
           convOut: 'Converted result will appear here.',
-          pwOut: 'Generated password will appear here.'
+          pwOut: 'Generated password will appear here.',
+          kwOut: 'Extracted keywords will appear here.',
+          replyOut: 'Generated reply draft will appear here.'
         },
         msg: {
           enterText: 'Please enter text first.',
-          enterNumber: 'Please enter a numeric value.'
+          enterNumber: 'Please enter a numeric value.',
+          enterMessage: 'Please enter the incoming message first.'
         },
         summaryKeywords: ['important', 'key', 'conclusion', 'problem', 'solution', 'result', 'strategy', 'efficient']
       }
@@ -602,7 +656,9 @@
         'brandText','navTools','navGuides','navFaq','navArticles','navPolicy','heroTitle','heroDesc','metaLine',
         'valueTitle','v1Title','v1Desc','v2Title','v2Desc','v3Title','v3Desc','guidePara1','guidePara2',
         'toolSectionTitle','sumTitle','sumDesc','sumBtn','convTitle','convDesc','convBtn','convKmMile','convMileKm',
-        'convCF','convFC','pwTitle','pwDesc','pwBtn','pwAll','pwAlnum','pwLetters','faqTitle','faqQ1','faqA1','faqQ2',
+        'convCF','convFC','pwTitle','pwDesc','pwBtn','pwAll','pwAlnum','pwLetters',
+        'kwTitle','kwDesc','kwBtn','replyTitle','replyDesc','replyBtn','replyToneFormal','replyToneFriendly','replyToneShort',
+        'faqTitle','faqQ1','faqA1','faqQ2',
         'faqA2','faqQ3','faqA3','articlesTitle','articlesDesc','article1Title','article1Desc','article1Link','article2Title','article2Desc','article2Link','article3Title','article3Desc','article3Link','policyTitle','policyDesc','linkPrivacy','linkTerms','linkDisclaimer','linkContact','footerText'
       ];
 
@@ -613,8 +669,10 @@
       document.getElementById('langToggle').textContent = t.langToggle;
       document.getElementById('sumInput').placeholder = t.sumPlaceholder;
       document.getElementById('convValue').placeholder = t.convValuePlaceholder;
+      document.getElementById('kwInput').placeholder = t.kwPlaceholder;
+      document.getElementById('replyInput').placeholder = t.replyPlaceholder;
 
-      ['sumOut','convOut','pwOut'].forEach((id) => {
+      ['sumOut','convOut','pwOut','kwOut','replyOut'].forEach((id) => {
         const el = document.getElementById(id);
         if (!el.dataset.default || el.dataset.default === 'true') {
           setOutput(id, t.defaults[id], true);
@@ -700,6 +758,70 @@
       let pw = '';
       for (let i = 0; i < len; i++) pw += chars[rand[i] % chars.length];
       setOutput('pwOut', pw, false);
+    }
+
+    function extractKeywords() {
+      const t = I18N[currentLang];
+      const text = document.getElementById('kwInput').value.trim();
+      const pick = Math.min(20, Math.max(3, Number(document.getElementById('kwCount').value) || 8));
+      if (!text) {
+        setOutput('kwOut', t.msg.enterText, false);
+        return;
+      }
+
+      const stopKo = new Set(['그리고','그러나','하지만','또한','에서','으로','하는','했다','합니다','것','수','등','때문','대한','이번','관련','위해','있다','없다']);
+      const stopEn = new Set(['the','and','for','with','that','this','from','into','have','has','had','are','was','were','will','would','about','your','their','there']);
+      const words = text
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length >= 2 && !stopKo.has(w) && !stopEn.has(w));
+
+      if (!words.length) {
+        setOutput('kwOut', t.msg.enterText, false);
+        return;
+      }
+
+      const freq = new Map();
+      words.forEach((w) => freq.set(w, (freq.get(w) || 0) + 1));
+      const top = [...freq.entries()]
+        .sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)
+        .slice(0, pick)
+        .map(([w, n], i) => `${i + 1}. ${w} (${n})`)
+        .join('\n');
+
+      setOutput('kwOut', top, false);
+    }
+
+    function generateReplyDraft() {
+      const t = I18N[currentLang];
+      const input = document.getElementById('replyInput').value.trim();
+      const tone = document.getElementById('replyTone').value;
+      if (!input) {
+        setOutput('replyOut', t.msg.enterMessage, false);
+        return;
+      }
+
+      const clean = input.replace(/\s+/g, ' ').trim();
+      const shortSummary = clean.length > 220 ? `${clean.slice(0, 220)}...` : clean;
+      const isEn = currentLang === 'en';
+
+      let reply = '';
+      if (tone === 'formal') {
+        reply = isEn
+          ? `Hello,\n\nThank you for your message. I reviewed your note: \"${shortSummary}\".\nI will proceed based on this and share an update shortly.\n\nBest regards,`
+          : `안녕하세요.\n\n메시지 주셔서 감사합니다. 전달해주신 내용(\"${shortSummary}\") 확인했습니다.\n해당 방향으로 진행 후 빠르게 업데이트드리겠습니다.\n\n감사합니다.`;
+      } else if (tone === 'friendly') {
+        reply = isEn
+          ? `Hi,\n\nThanks for reaching out. I checked your message: \"${shortSummary}\".\nSounds good to me, and I will move this forward.\n\nThanks!`
+          : `안녕하세요!\n\n메시지 잘 받았어요. 보내주신 내용(\"${shortSummary}\") 확인했습니다.\n좋은 방향이라 생각하고 이대로 진행해볼게요.\n\n고맙습니다!`;
+      } else {
+        reply = isEn
+          ? `Thanks for the message.\nChecked: \"${shortSummary}\"\nI will proceed and update soon.`
+          : `메시지 감사합니다.\n확인 내용: \"${shortSummary}\"\n이대로 진행하고 곧 공유드릴게요.`;
+      }
+
+      setOutput('replyOut', reply, false);
     }
 
     applyTheme(localStorage.getItem('themeMode') === 'dark' ? 'dark' : 'light');
