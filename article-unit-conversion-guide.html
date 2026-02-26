@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>단위 변환 실수 줄이는 업무 표준 가이드</title>
+  <meta name="description" content="km-mile, C-F 변환에서 자주 발생하는 실수를 줄이기 위한 실무 체크리스트" />
+  <style>body{font-family:Arial,sans-serif;max-width:920px;margin:38px auto;padding:0 16px;line-height:1.75;color:#1a2430}h1,h2,h3{line-height:1.35}a{color:#0e5ad2}.meta{color:#5c6b7a;font-size:.95rem}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #d8e1ec;padding:8px;text-align:left}th{background:#f3f7fd}</style>
+</head>
+<body>
+  <h1>단위 변환 실수 줄이는 업무 표준 가이드</h1>
+  <p class="meta">게시일: 2026년 2월 26일 | 분류: 데이터 정확성</p>
+
+  <p>단위 변환 오류는 작은 오타처럼 보이지만, 견적/납기/품질지표를 크게 왜곡할 수 있습니다. 특히 글로벌 협업에서는 단위 표기 규칙이 팀마다 달라 오류가 반복됩니다.</p>
+
+  <h2>1. 가장 많이 발생하는 오류 유형</h2>
+  <table>
+    <tr><th>오류 유형</th><th>설명</th><th>예방 방법</th></tr>
+    <tr><td>단위 미표기</td><td>숫자만 전달해 해석이 갈림</td><td>숫자 뒤에 단위를 고정 표기</td></tr>
+    <tr><td>반올림 과다</td><td>중간 계산에서 반올림해 오차 누적</td><td>최종 단계에서만 반올림</td></tr>
+    <tr><td>화씨/섭씨 혼동</td><td>기호 누락으로 반대 단위 해석</td><td>°C, °F를 문장 내 반복 표기</td></tr>
+  </table>
+
+  <h2>2. 표준 변환식 확인</h2>
+  <p>km -> mile: km × 0.621371<br/>mile -> km: mile ÷ 0.621371<br/>°C -> °F: (°C × 9/5) + 32<br/>°F -> °C: (°F - 32) × 5/9</p>
+
+  <h2>3. 보고서 작성 시 체크리스트</h2>
+  <h3>3-1. 본문/표/그래프 단위 통일</h3>
+  <p>동일 문서 내 단위가 섞이면 오해가 커집니다. 원칙 단위를 먼저 선언하세요.</p>
+  <h3>3-2. 변환 출처 명시</h3>
+  <p>자동 변환 도구를 사용했다면 변환식을 각주 또는 부록에 남기세요.</p>
+  <h3>3-3. 임계값 검토</h3>
+  <p>온도/거리 기준값(경보 기준 등)은 변환 후 임계 조건이 달라질 수 있으므로 별도 검증이 필요합니다.</p>
+
+  <h2>결론</h2>
+  <p>정확한 단위 변환은 계산 능력보다 "문서 표준화"의 문제입니다. 단위 선언, 중간 반올림 금지, 최종 검증 습관만 지켜도 대부분의 실수를 예방할 수 있습니다.</p>
+
+  <p><a href="index.html">메인으로 돌아가기</a></p>
+</body>
+</html>
