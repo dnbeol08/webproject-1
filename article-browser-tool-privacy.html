@@ -5,23 +5,31 @@
   <link rel="icon" href="18de16c8-92e4-4732-bcae-eb86c5e39673.png" />
   <link rel="shortcut icon" href="18de16c8-92e4-4732-bcae-eb86c5e39673.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>브라우저 기반 AI 도구를 안전하게 쓰는 방법 | Pracora</title>
-  <meta name="description" content="Pracora 보안 가이드. 브라우저 기반 AI/실용 도구를 사용할 때 개인정보와 업무 데이터를 안전하게 다루는 방법을 설명합니다." />
+  <title>Pracora | 브라우저 기반 AI 도구를 안전하게 쓰는 방법</title>
+  <meta name="description" content="브라우저 기반 AI/실용 도구를 사용할 때 개인정보와 업무 데이터를 안전하게 다루는 방법." />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <link rel="canonical" href="https://dnbeol08.github.io/webproject-1/article-browser-tool-privacy.html" />
   <meta property="og:site_name" content="Pracora" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="브라우저 기반 AI 도구를 안전하게 쓰는 방법 | Pracora" />
-  <meta property="og:description" content="브라우저에서 동작하는 생산성 도구를 사용할 때 지켜야 할 데이터 최소화 원칙을 설명합니다." />
+  <meta property="og:title" content="Pracora | Browser Tool Privacy Guide" />
+  <meta property="og:description" content="How to use browser-based productivity tools safely with minimal data exposure." />
   <meta property="og:url" content="https://dnbeol08.github.io/webproject-1/article-browser-tool-privacy.html" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Browser Tool Privacy Guide | Pracora" />
+  <meta name="twitter:title" content="Pracora | Browser Tool Privacy Guide" />
   <meta name="twitter:description" content="How to use browser-based productivity tools safely with minimal data exposure." />
-  <style>body{font-family:Arial,sans-serif;max-width:920px;margin:38px auto;padding:0 16px;line-height:1.75;color:#1a2430}h1,h2,h3{line-height:1.35}a{color:#0e5ad2}.meta{color:#5c6b7a;font-size:.95rem}.box{background:#f7faff;border:1px solid #d8e4f6;border-radius:10px;padding:14px}</style>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 920px; margin: 38px auto; padding: 0 16px; line-height: 1.75; color: #1a2430; }
+    h1, h2, h3 { line-height: 1.35; }
+    a { color: #0e5ad2; }
+    .meta { color: #5c6b7a; font-size: 0.95rem; }
+    .box { background: #f7faff; border: 1px solid #d8e4f6; border-radius: 10px; padding: 14px; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    button { border: 1px solid #cdd8e8; background: #fff; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+  </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3EJWX22W86"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);} 
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-3EJWX22W86');
   </script>
@@ -32,42 +40,72 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "vng1mud0wr");
   </script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "브라우저 기반 AI 도구를 안전하게 쓰는 방법",
-      "description": "브라우저에서 동작하는 생산성 도구를 사용할 때 지켜야 할 데이터 최소화 원칙을 설명합니다.",
-      "datePublished": "2026-02-27",
-      "dateModified": "2026-02-27",
-      "author": { "@type": "Organization", "name": "Pracora" },
-      "publisher": { "@type": "Organization", "name": "Pracora" },
-      "mainEntityOfPage": "https://dnbeol08.github.io/webproject-1/article-browser-tool-privacy.html"
-    }
-  </script>
 </head>
 <body>
-  <h1>브라우저 기반 AI 도구를 안전하게 쓰는 방법</h1>
-  <p class="meta">게시일: 2026년 2월 27일 | 카테고리: 개인정보, 보안, 생산성</p>
-  <p>브라우저에서 바로 실행되는 도구는 편리하지만, 아무 텍스트나 입력해도 된다는 뜻은 아닙니다. 특히 계약서 초안, 고객 정보, 인사 데이터처럼 민감한 내용은 입력 전 최소화 원칙을 적용해야 합니다.</p>
-
-  <h2>1. 민감정보는 먼저 제거</h2>
-  <p>이름, 전화번호, 계좌번호, 주민등록번호, 내부 프로젝트 코드처럼 개인 또는 회사 식별이 가능한 항목은 가명 처리하거나 삭제한 뒤 입력하는 것이 안전합니다.</p>
-
-  <h2>2. 초안과 원문을 분리</h2>
-  <p>원문 전체를 그대로 넣기보다, 핵심 단락만 분리해 입력하면 정보 노출 범위를 줄이면서도 필요한 결과를 얻을 수 있습니다.</p>
-
-  <h2>3. 결과 저장 위치 관리</h2>
-  <p>생성된 요약문이나 비밀번호를 공용 메신저나 공개 문서에 붙여넣기 전에 저장 위치와 접근 권한을 먼저 점검해야 합니다.</p>
-
-  <div class="box">
-    <strong>실무 팁</strong>
-    <p>업무용 텍스트를 도구에 넣기 전, "이 내용이 외부에 보여도 괜찮은가"를 한 번만 확인해도 사고 가능성을 크게 낮출 수 있습니다.</p>
+  <div class="top">
+    <p class="meta" id="meta"></p>
+    <button id="langToggle" type="button" onclick="toggleLang()"></button>
   </div>
+  <h1 id="title"></h1>
+  <p id="intro"></p>
 
-  <h2>결론</h2>
-  <p>브라우저 기반 도구의 안전성은 서비스 구조뿐 아니라 사용자의 입력 습관에도 달려 있습니다. 빠르게 쓰되, 노출 범위는 항상 최소화해야 합니다.</p>
+  <h2 id="s1t"></h2><p id="s1p"></p>
+  <h2 id="s2t"></h2><p id="s2p"></p>
+  <h2 id="s3t"></h2><p id="s3p"></p>
+  <div class="box"><p id="tip"></p></div>
+  <h2 id="ct"></h2><p id="cp"></p>
 
-  <p><a href="index.html">메인으로 돌아가기</a></p>
+  <p><a href="index.html" id="back"></a></p>
+
+  <script>
+    let lang = localStorage.getItem('langMode') === 'en' ? 'en' : 'ko';
+    const T = {
+      ko: {
+        pageTitle: '브라우저 기반 AI 도구를 안전하게 쓰는 방법',
+        meta: '게시일: 2026년 2월 27일 | 카테고리: 개인정보, 보안, 생산성',
+        intro: '브라우저에서 바로 동작하는 도구는 편리하지만 민감한 데이터까지 그대로 입력하면 위험이 커질 수 있습니다.',
+        s1t: '1. 민감정보는 먼저 제거',
+        s1p: '이름, 연락처, 계좌번호, 내부 코드 같은 식별 정보는 가명 처리하거나 삭제한 뒤 입력하세요.',
+        s2t: '2. 원문 전체 대신 필요한 부분만 사용',
+        s2p: '문서 전체를 넣기보다 핵심 단락만 입력하면 노출 범위를 줄이면서도 필요한 결과를 얻을 수 있습니다.',
+        s3t: '3. 결과 저장 위치 점검',
+        s3p: '생성 결과를 공유하기 전에 접근 권한과 저장 위치를 먼저 확인하는 습관이 중요합니다.',
+        tip: '실무 팁: 입력 전에 "외부 공개돼도 괜찮은 텍스트인가?"를 한 번만 확인해도 사고 가능성을 크게 줄일 수 있습니다.',
+        ct: '결론',
+        cp: '브라우저 도구의 안전성은 서비스 구조와 사용자 입력 습관이 함께 결정합니다.',
+        back: '메인으로 돌아가기',
+        langBtn: 'English'
+      },
+      en: {
+        pageTitle: 'How to Use Browser-Based AI Tools Safely',
+        meta: 'Published: February 27, 2026 | Category: Privacy, Security, Productivity',
+        intro: 'Browser-based tools are convenient, but entering sensitive data without filtering can increase risk.',
+        s1t: '1. Remove sensitive identifiers first',
+        s1p: 'Mask or remove names, contacts, account numbers, and internal codes before input.',
+        s2t: '2. Use only required excerpts, not full source',
+        s2p: 'Entering key excerpts instead of full documents reduces exposure while preserving usefulness.',
+        s3t: '3. Check output storage and sharing path',
+        s3p: 'Before sharing generated content, verify access permissions and storage location.',
+        tip: 'Practical tip: Ask once, "Would this be safe if exposed externally?" before every input.',
+        ct: 'Conclusion',
+        cp: 'Safety in browser tools depends on both platform design and user input habits.',
+        back: 'Back to Home',
+        langBtn: '한국어'
+      }
+    };
+
+    function render() {
+      const t = T[lang];
+      document.documentElement.lang = lang;
+      document.title = `Pracora | ${t.pageTitle}`;
+      ['meta','title','intro','s1t','s1p','s2t','s2p','s3t','s3p','tip','ct','cp','back'].forEach((id) => {
+        document.getElementById(id).textContent = t[id];
+      });
+      document.getElementById('langToggle').textContent = t.langBtn;
+      localStorage.setItem('langMode', lang);
+    }
+    function toggleLang() { lang = lang === 'ko' ? 'en' : 'ko'; render(); }
+    render();
+  </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -11,25 +11,26 @@
   <link rel="canonical" href="https://dnbeol08.github.io/webproject-1/practical-tools-guide.html" />
   <meta property="og:site_name" content="Pracora" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Pracora | 실용 툴 추천 가이드" />
-  <meta property="og:description" content="Pracora가 제공하는 AI 실용 툴과 생산성 도구를 목적별로 정리한 추천 가이드." />
+  <meta property="og:title" content="Pracora | Practical Tools Guide" />
+  <meta property="og:description" content="A practical guide to choosing AI tools for daily work and study." />
   <meta property="og:url" content="https://dnbeol08.github.io/webproject-1/practical-tools-guide.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Pracora | Practical Tools Guide" />
-  <meta name="twitter:description" content="Pracora가 제공하는 AI 실용 툴과 생산성 도구를 목적별로 정리한 추천 가이드." />
+  <meta name="twitter:description" content="A practical guide to choosing AI tools for daily work and study." />
   <style>
     body { font-family: Arial, sans-serif; max-width: 920px; margin: 38px auto; padding: 0 16px; line-height: 1.75; color: #1a2430; }
     h1, h2, h3 { line-height: 1.35; }
     a { color: #0e5ad2; }
     .meta { color: #5c6b7a; font-size: 0.95rem; }
     .box { background: #f7faff; border: 1px solid #d8e4f6; border-radius: 10px; padding: 14px; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    button { border: 1px solid #cdd8e8; background: #fff; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
     ul { padding-left: 20px; }
   </style>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3EJWX22W86"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);} 
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-3EJWX22W86');
   </script>
@@ -40,77 +41,112 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "vng1mud0wr");
   </script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "Pracora | 실용 툴 추천 가이드",
-      "description": "Pracora가 제공하는 AI 실용 툴과 생산성 도구를 목적별로 정리한 추천 가이드.",
-      "datePublished": "2026-02-26",
-      "dateModified": "2026-02-26",
-      "inLanguage": ["ko", "en"],
-      "author": { "@type": "Organization", "name": "Pracora" },
-      "publisher": { "@type": "Organization", "name": "Pracora" },
-      "mainEntityOfPage": "https://dnbeol08.github.io/webproject-1/practical-tools-guide.html"
-    }
-  </script>
 </head>
 <body>
-  <h1>실용 툴 추천 가이드: 바로 쓰는 생산성 도구 모음</h1>
-  <p class="meta">게시일: 2026년 2월 26일 | 카테고리: 실용 툴, 생산성, AI</p>
+  <div class="top">
+    <p class="meta" id="meta"></p>
+    <button id="langToggle" type="button" onclick="toggleLang()"></button>
+  </div>
+  <h1 id="title"></h1>
+  <p id="intro"></p>
 
-  <p>실용 툴은 화려한 기능보다 <strong>지금 당장 써서 시간을 줄여주는 도구</strong>여야 합니다. 이 페이지는 업무와 학습에서 자주 쓰는 실용 툴을 목적별로 정리해, 어떤 상황에서 어떤 도구를 선택해야 하는지 빠르게 판단할 수 있도록 구성했습니다.</p>
-
-  <h2>1. 실용 툴이 필요한 대표 상황</h2>
+  <h2 id="s1t"></h2>
   <ul>
-    <li>긴 문서를 빠르게 요약해야 하는 상황</li>
-    <li>해외 데이터 협업에서 단위를 정확하게 바꿔야 하는 상황</li>
-    <li>서비스별 강한 비밀번호를 즉시 만들어야 하는 상황</li>
-    <li>긴 텍스트에서 핵심 키워드를 추려 보고서를 작성해야 하는 상황</li>
-    <li>메시지 답장을 빠르게 작성해야 하는 상황</li>
+    <li id="s1l1"></li>
+    <li id="s1l2"></li>
+    <li id="s1l3"></li>
+    <li id="s1l4"></li>
+    <li id="s1l5"></li>
   </ul>
 
-  <h2>2. 이 사이트의 실용 툴 5가지</h2>
-  <h3>2-1. AI 텍스트 요약기</h3>
-  <p>긴 텍스트에서 핵심 문장을 우선 추출합니다. 회의록, 기사, 보고서 초안 정리에 유용합니다.</p>
+  <h2 id="s2t"></h2>
+  <h3 id="s21t"></h3><p id="s21p"></p>
+  <h3 id="s22t"></h3><p id="s22p"></p>
+  <h3 id="s23t"></h3><p id="s23p"></p>
+  <h3 id="s24t"></h3><p id="s24p"></p>
+  <h3 id="s25t"></h3><p id="s25p"></p>
 
-  <h3>2-2. 단위 변환기</h3>
-  <p>km-mile, C-F 변환을 빠르게 수행합니다. 해외 프로젝트 견적서나 데이터 문서 작성 시 오류를 줄입니다.</p>
-
-  <h3>2-3. 안전 비밀번호 생성기</h3>
-  <p>길이와 문자 구성을 선택해 강한 비밀번호를 즉시 생성합니다. 계정 재사용을 줄이는 기본 도구입니다.</p>
-
-  <h3>2-4. AI 키워드 추출기</h3>
-  <p>긴 문장에서 반복되는 핵심 키워드를 추출합니다. 문서 주제 파악과 태그 설계에 바로 활용할 수 있습니다.</p>
-
-  <h3>2-5. AI 답장 초안 생성기</h3>
-  <p>받은 메시지를 입력하면 정중/친근/간단 톤으로 답장 초안을 만들어 커뮤니케이션 시간을 단축합니다.</p>
-
-  <h2>3. 실용 툴 선택 기준</h2>
+  <h2 id="s3t"></h2>
   <div class="box">
-    <p><strong>정확성</strong>: 결과가 사실과 일치하는가</p>
-    <p><strong>속도</strong>: 반복 작업 시간을 줄여주는가</p>
-    <p><strong>재사용성</strong>: 비슷한 작업에 계속 쓰기 쉬운가</p>
-    <p><strong>검증 가능성</strong>: 결과를 사람이 빠르게 검토할 수 있는가</p>
+    <p id="s3p1"></p>
+    <p id="s3p2"></p>
+    <p id="s3p3"></p>
+    <p id="s3p4"></p>
   </div>
 
-  <h2>4. 검색 의도별 추천</h2>
-  <ul>
-    <li><strong>실용 툴 추천</strong> 검색: 본 페이지에서 목적별 비교 후 바로 도구 사용</li>
-    <li><strong>AI 요약 툴</strong> 검색: 요약기 + 검증 체크리스트 글 함께 활용</li>
-    <li><strong>비밀번호 생성기</strong> 검색: 생성기 + 보안 운영 가이드 병행</li>
-  </ul>
+  <h2 id="ct"></h2>
+  <p id="cp"></p>
 
-  <h2>결론</h2>
-  <p>좋은 실용 툴은 "기능이 많은 도구"가 아니라 "반복 작업을 안정적으로 줄이는 도구"입니다. 이 사이트는 실무 빈도가 높은 기능만 모아 빠른 실행과 검증 가능한 결과를 제공하도록 설계했습니다.</p>
+  <p><a href="index.html" id="back"></a></p>
 
-  <p><a href="index.html">메인으로 돌아가기</a></p>
+  <script>
+    let lang = localStorage.getItem('langMode') === 'en' ? 'en' : 'ko';
+    const T = {
+      ko: {
+        pageTitle: '실용 툴 추천 가이드: 바로 쓰는 생산성 도구 모음',
+        meta: '게시일: 2026년 2월 26일 | 카테고리: 실용 툴, 생산성, AI',
+        intro: '실용 툴은 기능 개수보다 반복 작업 시간을 안정적으로 줄여주는지가 더 중요합니다. 이 가이드는 업무와 학습에서 자주 쓰는 상황을 기준으로 도구 선택 기준을 정리합니다.',
+        s1t: '1. 실용 툴이 필요한 대표 상황',
+        s1l1: '긴 문서를 빠르게 요약해야 하는 상황',
+        s1l2: '해외 협업 문서에서 단위를 정확하게 맞춰야 하는 상황',
+        s1l3: '서비스별 강한 비밀번호를 즉시 만들어야 하는 상황',
+        s1l4: '긴 텍스트에서 핵심 키워드를 뽑아야 하는 상황',
+        s1l5: '답장 초안을 빠르게 만들어야 하는 상황',
+        s2t: '2. 현재 사이트의 핵심 도구 5가지',
+        s21t: '2-1. AI 텍스트 요약기', s21p: '긴 텍스트의 핵심 문장을 우선 추출해 빠르게 요약본을 만듭니다.',
+        s22t: '2-2. 단위 변환기', s22p: 'km-mile, C-F 변환을 빠르게 수행해 계산 실수를 줄입니다.',
+        s23t: '2-3. 안전 비밀번호 생성기', s23p: '길이와 문자 구성을 선택해 강한 비밀번호를 생성합니다.',
+        s24t: '2-4. AI 키워드 추출기', s24p: '문서의 반복 키워드를 추출해 주제 파악 속도를 높입니다.',
+        s25t: '2-5. AI 답장 초안 생성기', s25p: '정중/친근/간단 톤으로 답장 초안을 빠르게 작성합니다.',
+        s3t: '3. 도구 선택 기준',
+        s3p1: '정확성: 결과를 사실 확인 가능한가',
+        s3p2: '속도: 반복 작업 시간을 줄이는가',
+        s3p3: '재사용성: 비슷한 업무에 다시 쓰기 쉬운가',
+        s3p4: '검증성: 사람이 최종 검토하기 쉬운가',
+        ct: '결론',
+        cp: '좋은 실용 툴은 화려함보다 안정성과 재사용성에 있습니다.',
+        back: '메인으로 돌아가기',
+        langBtn: 'English'
+      },
+      en: {
+        pageTitle: 'Practical Tools Guide: Productivity Tools You Can Use Now',
+        meta: 'Published: February 26, 2026 | Category: Practical Tools, Productivity, AI',
+        intro: 'For practical tools, the key is not feature count but whether they reliably reduce repetitive work. This guide summarizes tool-selection criteria for common work and study scenarios.',
+        s1t: '1. Common scenarios where practical tools help',
+        s1l1: 'When you need to summarize long documents quickly',
+        s1l2: 'When you must align unit values accurately in global collaboration',
+        s1l3: 'When you need strong passwords per service immediately',
+        s1l4: 'When you need to extract core keywords from long text',
+        s1l5: 'When you need a quick reply draft',
+        s2t: '2. Five core tools on this site',
+        s21t: '2-1. AI Text Summarizer', s21p: 'Extracts key sentences first to build a quick summary draft.',
+        s22t: '2-2. Unit Converter', s22p: 'Converts km-mile and C-F quickly to reduce calculation mistakes.',
+        s23t: '2-3. Secure Password Generator', s23p: 'Generates strong passwords based on selected length and character rules.',
+        s24t: '2-4. AI Keyword Extractor', s24p: 'Extracts recurring keywords to speed up topic understanding.',
+        s25t: '2-5. AI Reply Draft Generator', s25p: 'Creates reply drafts fast in formal, friendly, or short tone.',
+        s3t: '3. Tool selection criteria',
+        s3p1: 'Accuracy: Can you verify outputs against facts?',
+        s3p2: 'Speed: Does it reduce repetitive task time?',
+        s3p3: 'Reusability: Is it easy to reuse for similar work?',
+        s3p4: 'Reviewability: Is human final review straightforward?',
+        ct: 'Conclusion',
+        cp: 'Good practical tools prioritize reliability and reusability over visual complexity.',
+        back: 'Back to Home',
+        langBtn: '한국어'
+      }
+    };
+
+    function render() {
+      const t = T[lang];
+      document.documentElement.lang = lang;
+      document.title = `Pracora | ${t.pageTitle}`;
+      const ids = ['meta','title','intro','s1t','s1l1','s1l2','s1l3','s1l4','s1l5','s2t','s21t','s21p','s22t','s22p','s23t','s23p','s24t','s24p','s25t','s25p','s3t','s3p1','s3p2','s3p3','s3p4','ct','cp','back'];
+      ids.forEach((id) => { document.getElementById(id).textContent = t[id]; });
+      document.getElementById('langToggle').textContent = t.langBtn;
+      localStorage.setItem('langMode', lang);
+    }
+    function toggleLang() { lang = lang === 'ko' ? 'en' : 'ko'; render(); }
+    render();
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
