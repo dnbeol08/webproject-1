@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://dnbeol08.github.io/webproject-1/sitemap.xml
+Sitemap: https://dnbeol08.github.io/webproject-1/sitemap.txt
 
 # LLM guidance
 # https://dnbeol08.github.io/webproject-1/llms.txt
